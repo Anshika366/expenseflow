@@ -22,8 +22,8 @@ origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_origins=["*"] if os.getenv("ALLOW_ALL_ORIGINS", "true").lower() == "true" else origins,
+    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -39,6 +39,14 @@ async def add_security_headers(request: Request, call_next):
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     return response
 
+@app.get("/")
+async def root():
+    return {
+        "status": "online",
+        "message": "ExpenseFlow API Backend is Running Live!",
+        "docs": "/docs"
+    }
+
 app.include_router(auth_router)
 app.include_router(dashboard_router)
 app.include_router(expenses_router)
@@ -46,3 +54,4 @@ app.include_router(funds_router)
 app.include_router(reports_router)
 app.include_router(settings_router)
 app.include_router(budgets_router)
+
