@@ -12,7 +12,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    if (token) {
+    if (token && token.startsWith("eyJ")) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -20,8 +20,24 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const storedToken = localStorage.getItem("token");
+      if (storedToken && storedToken.startsWith("eyJ")) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("isAuthenticated");
+        localStorage.removeItem("userName");
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const getBudgets = () => api.get("/budgets");
 export const updateBudgets = (data) => api.put("/budgets", data);
 
 export default api;
+
 

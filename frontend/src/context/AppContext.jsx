@@ -178,10 +178,12 @@ export function AppProvider({ children }) {
       localStorage.setItem("isAuthenticated", "true");
       await fetchAppData();
     } catch (err) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("isAuthenticated");
       dispatch({
         type: "SET_USER",
         payload: { name: initialUserName, email: "anshika@example.com" },
-        token,
+        token: "demo-session-token-anshika",
       });
       await fetchAppData();
     }
