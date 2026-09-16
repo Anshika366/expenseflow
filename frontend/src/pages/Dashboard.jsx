@@ -614,7 +614,7 @@ export default function Dashboard({ darkMode }) {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-7 xl:gap-8 pt-4 pb-2 text-left">
-        <div className="bg-white dark:bg-[#0B0F19] border border-purple-200/60 dark:border-purple-900/50 hover:border-[#8B5CF6] dark:hover:border-[#A855F7] p-7 md:p-8 rounded-[24px] shadow-[0_12px_35px_-8px_rgba(139,92,246,0.18)] dark:shadow-[0_18px_45px_-8px_rgba(168,85,247,0.28)] hover:shadow-[0_22px_60px_-5px_rgba(139,92,246,0.38)] dark:hover:shadow-[0_28px_70px_-5px_rgba(168,85,247,0.52)] flex flex-col justify-between h-[460px] relative overflow-hidden text-left transform hover:-translate-y-2.5 transition-all duration-300 ease-out group">
+        <div className="bg-white dark:bg-[#0B0F19] border border-purple-200/60 dark:border-purple-900/50 hover:border-[#8B5CF6] dark:hover:border-[#A855F7] p-7 md:p-8 rounded-[24px] shadow-[0_12px_35px_-8px_rgba(139,92,246,0.18)] dark:shadow-[0_18px_45px_-8px_rgba(168,85,247,0.28)] hover:shadow-[0_22px_60px_-5px_rgba(139,92,246,0.38)] dark:hover:shadow-[0_28px_70px_-5px_rgba(168,85,247,0.52)] flex flex-col justify-between min-h-[420px] lg:h-[460px] relative overflow-hidden text-left transform hover:-translate-y-2.5 transition-all duration-300 ease-out group">
           <div>
             <div>
               <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -695,7 +695,7 @@ export default function Dashboard({ darkMode }) {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#0B0F19] border border-purple-200/60 dark:border-purple-900/50 hover:border-[#8B5CF6] dark:hover:border-[#A855F7] p-6 md:p-7 rounded-[24px] shadow-[0_12px_35px_-8px_rgba(139,92,246,0.18)] dark:shadow-[0_18px_45px_-8px_rgba(168,85,247,0.28)] hover:shadow-[0_22px_60px_-5px_rgba(139,92,246,0.38)] dark:hover:shadow-[0_28px_70px_-5px_rgba(168,85,247,0.52)] flex flex-col justify-between space-y-4 relative h-[460px] transform hover:-translate-y-2.5 transition-all duration-300 ease-out group">
+        <div className="bg-white dark:bg-[#0B0F19] border border-purple-200/60 dark:border-purple-900/50 hover:border-[#8B5CF6] dark:hover:border-[#A855F7] p-6 md:p-7 rounded-[24px] shadow-[0_12px_35px_-8px_rgba(139,92,246,0.18)] dark:shadow-[0_18px_45px_-8px_rgba(168,85,247,0.28)] hover:shadow-[0_22px_60px_-5px_rgba(139,92,246,0.38)] dark:hover:shadow-[0_28px_70px_-5px_rgba(168,85,247,0.52)] flex flex-col justify-between space-y-4 relative min-h-[420px] lg:h-[460px] transform hover:-translate-y-2.5 transition-all duration-300 ease-out group">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
@@ -837,7 +837,7 @@ export default function Dashboard({ darkMode }) {
           </button>
         </div>
 
-        <div className="bg-white dark:bg-[#0B0F19] border border-purple-200/60 dark:border-purple-900/50 hover:border-[#8B5CF6] dark:hover:border-[#A855F7] p-6 md:p-7 rounded-[24px] shadow-[0_12px_35px_-8px_rgba(139,92,246,0.18)] dark:shadow-[0_18px_45px_-8px_rgba(168,85,247,0.28)] hover:shadow-[0_22px_60px_-5px_rgba(139,92,246,0.38)] dark:hover:shadow-[0_28px_70px_-5px_rgba(168,85,247,0.52)] flex flex-col justify-between space-y-4 text-left relative overflow-hidden h-[460px] transform hover:-translate-y-2.5 transition-all duration-300 ease-out group">
+        <div className="bg-white dark:bg-[#0B0F19] border border-purple-200/60 dark:border-purple-900/50 hover:border-[#8B5CF6] dark:hover:border-[#A855F7] p-6 md:p-7 rounded-[24px] shadow-[0_12px_35px_-8px_rgba(139,92,246,0.18)] dark:shadow-[0_18px_45px_-8px_rgba(168,85,247,0.28)] hover:shadow-[0_22px_60px_-5px_rgba(139,92,246,0.38)] dark:hover:shadow-[0_28px_70px_-5px_rgba(168,85,247,0.52)] flex flex-col justify-between space-y-4 text-left relative overflow-hidden min-h-[420px] lg:h-[460px] transform hover:-translate-y-2.5 transition-all duration-300 ease-out group">
           <div className="space-y-3">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
               <h3 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
