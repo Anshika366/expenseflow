@@ -60,14 +60,19 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 
 @router.post("/reset-password")
 async def update_password(payload: UpdatePasswordModel):
-    clean_email = payload.email.lower().strip()
-    user = await users_col.find_one({"email": {"$regex": f"^{re.escape(clean_email)}$", "$options": "i"}})
-    if not user:
-        raise HTTPException(status_code=404, detail="No account found with this email address.")
-    
-    hashed_pwd = hash_password(payload.new_password)
-    await users_col.update_one(
-        {"_id": user["_id"]},
-        {"$set": {"password_hash": hashed_pwd}}
-    )
-    return {"message": "Password updated successfully. Please log in."}
+    try:
+        clean_email = payload.email.lower().strip()
+        user = await users_col.find_one({"email": {"$regex": f"^{re.escape(clean_email)}$", "$options": "i"}})
+        if not user:
+            raise HTTPException(status_code=404, detail="No account found with this email address.")
+        
+        hashed_pwd = hash_password(payload.new_password)
+        await users_col.update_one(
+            {"_id": user["_id"]},
+            {"$set": {"password_hash": hashed_pwd}}
+        )
+        return {"message": "Password updated successfully. Please log in."}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database or Reset Password Error: {str(e)}")
