@@ -168,28 +168,28 @@ export default function Reports() {
 
   if (isReportsStatementPage) {
     return (
-      <div className="space-y-6 sm:space-y-7 pb-12 text-left font-sans text-slate-800 dark:text-slate-100 max-w-6xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/90 ring-1 ring-slate-900/5 dark:ring-white/10 p-5 sm:p-6 rounded-[24px] sm:rounded-[28px] shadow-sm relative overflow-hidden">
+      <div className="space-y-4 sm:space-y-7 pb-12 text-left font-sans text-slate-800 dark:text-slate-100 max-w-6xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/90 ring-1 ring-slate-900/5 dark:ring-white/10 p-4 sm:p-6 rounded-[20px] sm:rounded-[28px] shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-[#5B4CFF]/10 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 space-y-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 shrink-0 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-[#5B4CFF] dark:text-indigo-300 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-[#5B4CFF] dark:text-indigo-300 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
                 <FileText size={18} />
               </div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-[#0F172A] dark:text-white tracking-tight">
+              <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-[#0F172A] dark:text-white tracking-tight">
                 Financial Reports & Statements
               </h1>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-semibold">
               Download CSV statement or print your expense report.
             </p>
           </div>
 
-          <div className="relative z-10 flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0 w-full sm:w-auto">
+          <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 w-full sm:w-auto shrink-0">
             <button
               onClick={handleExportCSV}
-              className="flex-1 sm:flex-initial justify-center flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-[#5B4CFF] to-[#3B82F6] hover:from-[#4C3DE6] hover:to-[#2563EB] text-white rounded-2xl text-xs font-black shadow-lg shadow-indigo-500/25 hover:shadow-2xl hover:shadow-indigo-500/45 hover:-translate-y-0.5 cursor-pointer transition-all"
+              className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-[#5B4CFF] to-[#3B82F6] hover:from-[#4C3DE6] hover:to-[#2563EB] text-white rounded-2xl text-xs font-black shadow-lg shadow-indigo-500/25 hover:shadow-2xl hover:shadow-indigo-500/45 hover:-translate-y-0.5 cursor-pointer transition-all"
             >
               {downloadSuccess ? <CheckCircle2 size={16} /> : <Download size={16} />}
               <span>{downloadSuccess ? "CSV Exported!" : "Export CSV"}</span>
@@ -197,7 +197,7 @@ export default function Reports() {
 
             <button
               onClick={handlePrint}
-              className="flex-1 sm:flex-initial justify-center flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl text-xs font-black border border-slate-200 dark:border-slate-700 cursor-pointer transition-all hover:-translate-y-0.5"
+              className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl text-xs font-black border border-slate-200 dark:border-slate-700 cursor-pointer transition-all hover:-translate-y-0.5"
             >
               <Printer size={16} />
               <span>Print Report</span>
@@ -205,13 +205,13 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/90 ring-1 ring-slate-900/5 dark:ring-white/10 rounded-[24px] sm:rounded-[28px] p-4 sm:p-6 md:p-7 shadow-sm space-y-5 sm:space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800/80">
+        <div className="bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/90 ring-1 ring-slate-900/5 dark:ring-white/10 rounded-[20px] sm:rounded-[28px] p-3.5 sm:p-6 md:p-7 shadow-sm space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 sm:pb-4 border-b border-slate-100 dark:border-slate-800/80">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-[#5B4CFF] dark:text-indigo-300 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-[#5B4CFF] dark:text-indigo-300 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40 shadow-sm shrink-0">
                 <Filter size={15} />
               </div>
-              <h2 className="font-extrabold text-sm uppercase tracking-wider text-slate-900 dark:text-white">
+              <h2 className="font-extrabold text-xs sm:text-sm uppercase tracking-wider text-slate-900 dark:text-white">
                 Filter Transactions
               </h2>
             </div>
@@ -219,20 +219,22 @@ export default function Reports() {
             <div className="relative w-full sm:w-auto" ref={filterDropdownRef}>
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="w-full sm:w-auto justify-between sm:justify-start flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800 rounded-2xl text-xs font-black text-slate-800 dark:text-slate-100 hover:border-[#5B4CFF] dark:hover:border-indigo-500 hover:shadow-md hover:shadow-indigo-500/10 transition-all cursor-pointer"
+                className="w-full sm:w-auto justify-between sm:justify-start flex items-center gap-2.5 px-3.5 sm:px-4 py-2.5 bg-slate-50 dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800 rounded-2xl text-xs font-black text-slate-800 dark:text-slate-100 hover:border-[#5B4CFF] dark:hover:border-indigo-500 hover:shadow-md hover:shadow-indigo-500/10 transition-all cursor-pointer"
               >
-                <Calendar size={15} className="text-[#5B4CFF] dark:text-indigo-400" />
-                <span>{currentFilterObj.label}</span>
+                <div className="flex items-center gap-2">
+                  <Calendar size={15} className="text-[#5B4CFF] dark:text-indigo-400 shrink-0" />
+                  <span>{currentFilterObj.label}</span>
+                </div>
                 <ChevronDown
                   size={15}
-                  className={`text-[#5B4CFF] dark:text-indigo-400 transition-transform duration-300 ${
+                  className={`text-[#5B4CFF] dark:text-indigo-400 transition-transform duration-300 shrink-0 ${
                     isFilterOpen ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
               {isFilterOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800/90 rounded-2xl shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in duration-200 space-y-1">
+                <div className="absolute right-0 mt-2 w-full sm:w-48 bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800/90 rounded-2xl shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in duration-200 space-y-1">
                   {filterOptions.map((opt) => {
                     const isSelected = dateFilter === opt.value;
                     return (
@@ -259,59 +261,59 @@ export default function Reports() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
-            <div className="group relative overflow-hidden bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-4 sm:p-5 hover:border-[#5B4CFF]/60 dark:hover:border-indigo-500/60 hover:shadow-[0_15px_35px_rgba(91,76,255,0.2)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex items-center justify-between">
+            <div className="group relative overflow-hidden bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-3.5 sm:p-5 hover:border-[#5B4CFF]/60 dark:hover:border-indigo-500/60 hover:shadow-[0_15px_35px_rgba(91,76,255,0.2)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1">
                   Total Transactions
                 </span>
-                <span className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                <span className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                   {filteredExpenses.length} Items
                 </span>
               </div>
-              <div className="w-10 h-10 shrink-0 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-[#5B4CFF] dark:text-indigo-300 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-[#5B4CFF] dark:text-indigo-300 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40">
                 <FileText size={18} />
               </div>
             </div>
 
-            <div className="group relative overflow-hidden bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-4 sm:p-5 hover:border-rose-500/60 dark:hover:border-rose-500/60 hover:shadow-[0_15px_35px_rgba(244,63,94,0.2)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex items-center justify-between">
+            <div className="group relative overflow-hidden bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-3.5 sm:p-5 hover:border-rose-500/60 dark:hover:border-rose-500/60 hover:shadow-[0_15px_35px_rgba(244,63,94,0.2)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1">
                   Total Amount Spent
                 </span>
-                <span className="text-xl sm:text-2xl font-black text-rose-500 tracking-tight">
+                <span className="text-lg sm:text-2xl font-black text-rose-500 tracking-tight">
                   ₹{totalSpentFiltered.toLocaleString("en-IN")}
                 </span>
               </div>
-              <div className="w-10 h-10 shrink-0 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-500 flex items-center justify-center border border-rose-100 dark:border-rose-900/40">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-500 flex items-center justify-center border border-rose-100 dark:border-rose-900/40">
                 <TrendingDown size={18} />
               </div>
             </div>
 
-            <div className="group relative overflow-hidden bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-4 sm:p-5 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 hover:shadow-[0_15px_35px_rgba(16,185,129,0.2)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex items-center justify-between">
+            <div className="group relative overflow-hidden bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-3.5 sm:p-5 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 hover:shadow-[0_15px_35px_rgba(16,185,129,0.2)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1">
                   Export Status
                 </span>
-                <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 mt-1">
-                  <CheckCircle2 size={16} /> Ready to Download
+                <span className="text-[11px] sm:text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 mt-1">
+                  <CheckCircle2 size={15} /> Ready to Download
                 </span>
               </div>
-              <div className="w-10 h-10 shrink-0 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/40">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/40">
                 <Download size={18} />
               </div>
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-800/80">
-            <table className="w-full min-w-[550px] text-left text-xs border-collapse">
+          <div className="overflow-x-auto rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-800/80">
+            <table className="w-full min-w-[500px] text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50/90 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 text-[11px] font-black text-[#0F172A] dark:text-white uppercase tracking-wider select-none">
-                  <th className="py-3 sm:py-3.5 px-3 sm:px-4">#</th>
-                  <th className="py-3 sm:py-3.5 px-3 sm:px-4">Title</th>
-                  <th className="py-3 sm:py-3.5 px-3 sm:px-4">Category</th>
-                  <th className="py-3 sm:py-3.5 px-3 sm:px-4">Date</th>
-                  <th className="py-3 sm:py-3.5 px-3 sm:px-4">Method</th>
-                  <th className="py-3 sm:py-3.5 px-3 sm:px-4 text-right">Amount</th>
+                <tr className="bg-slate-50/90 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 text-[10px] sm:text-[11px] font-black text-[#0F172A] dark:text-white uppercase tracking-wider select-none">
+                  <th className="py-3 sm:py-3.5 px-2.5 sm:px-4">#</th>
+                  <th className="py-3 sm:py-3.5 px-2.5 sm:px-4">Title</th>
+                  <th className="py-3 sm:py-3.5 px-2.5 sm:px-4">Category</th>
+                  <th className="py-3 sm:py-3.5 px-2.5 sm:px-4">Date</th>
+                  <th className="py-3 sm:py-3.5 px-2.5 sm:px-4">Method</th>
+                  <th className="py-3 sm:py-3.5 px-2.5 sm:px-4 text-right">Amount</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-semibold">
@@ -329,25 +331,25 @@ export default function Reports() {
                         key={exp.id || idx}
                         className="hover:bg-[#F1F0FF]/60 dark:hover:bg-indigo-950/30 transition-all duration-200 group"
                       >
-                        <td className="py-3.5 sm:py-4 px-3 sm:px-4 font-mono text-slate-400 group-hover:text-[#5B4CFF] transition-colors">
+                        <td className="py-3 sm:py-4 px-2.5 sm:px-4 font-mono text-slate-400 group-hover:text-[#5B4CFF] transition-colors">
                           {String(idx + 1).padStart(2, "0")}
                         </td>
-                        <td className="py-3.5 sm:py-4 px-3 sm:px-4 font-extrabold text-slate-900 dark:text-white group-hover:text-[#5B4CFF] transition-colors">
+                        <td className="py-3 sm:py-4 px-2.5 sm:px-4 font-extrabold text-slate-900 dark:text-white max-w-[120px] sm:max-w-none truncate group-hover:text-[#5B4CFF] transition-colors">
                           {exp.name || exp.title || "Transaction"}
                         </td>
-                        <td className="py-3.5 sm:py-4 px-3 sm:px-4">
+                        <td className="py-3 sm:py-4 px-2.5 sm:px-4">
                           <span className={`inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl text-[10px] sm:text-[11px] font-black border ${badge.style}`}>
                             <span>{badge.icon}</span>
                             <span>{exp.category || "Others"}</span>
                           </span>
                         </td>
-                        <td className="py-3.5 sm:py-4 px-3 sm:px-4 text-[#5B4CFF] dark:text-indigo-300 font-extrabold">
+                        <td className="py-3 sm:py-4 px-2.5 sm:px-4 text-[#5B4CFF] dark:text-indigo-300 font-extrabold whitespace-nowrap">
                           {exp.date || "N/A"}
                         </td>
-                        <td className="py-3.5 sm:py-4 px-3 sm:px-4 text-slate-600 dark:text-slate-300 font-bold">
+                        <td className="py-3 sm:py-4 px-2.5 sm:px-4 text-slate-600 dark:text-slate-300 font-bold whitespace-nowrap">
                           {exp.paymentMethod || exp.method || "Cash"}
                         </td>
-                        <td className="py-3.5 sm:py-4 px-3 sm:px-4 text-right font-black text-rose-500 text-sm">
+                        <td className="py-3 sm:py-4 px-2.5 sm:px-4 text-right font-black text-rose-500 text-xs sm:text-sm whitespace-nowrap">
                           ₹{(Number(exp.amount) || 0).toLocaleString("en-IN")}
                         </td>
                       </tr>
