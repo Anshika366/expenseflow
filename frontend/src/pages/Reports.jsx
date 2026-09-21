@@ -90,7 +90,7 @@ export default function Reports() {
       `"${(e.name || e.title || "Expense").replace(/"/g, '""')}"`,
       e.category || "Others",
       e.date || "",
-      e.paymentMethod || e.method || "Cash",
+      e.payment_method || e.paymentMethod || e.method || "UPI",
       e.amount || 0,
     ]);
 
@@ -313,7 +313,7 @@ export default function Reports() {
                         {exp.date || "N/A"}
                       </td>
                       <td className="py-4 px-4 text-slate-600 dark:text-slate-300 font-extrabold whitespace-nowrap">
-                        {exp.paymentMethod || exp.method || "Cash"}
+                        {exp.payment_method || exp.paymentMethod || exp.method || "UPI"}
                       </td>
                       <td className="py-4 px-4 text-right font-black text-rose-500 text-sm whitespace-nowrap">
                         ₹{(Number(exp.amount) || 0).toLocaleString("en-IN")}

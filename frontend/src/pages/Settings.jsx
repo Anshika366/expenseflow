@@ -172,7 +172,7 @@ export default function Settings({ darkMode, setDarkMode }) {
                   amount: Number(item.amount) || 0,
                   category: item.category || "Others",
                   date: item.date || new Date().toISOString().split("T")[0],
-                  paymentMethod: item.paymentMethod || item.method || "Cash",
+                  payment_method: item.payment_method || item.paymentMethod || item.method || "UPI",
                   notes: item.notes || "",
                 });
               } catch (singleErr) {}

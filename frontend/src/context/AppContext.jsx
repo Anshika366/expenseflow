@@ -7,8 +7,8 @@ const initialToken = localStorage.getItem("token") || "demo-session-token-anshik
 const initialUserName = localStorage.getItem("userName") || "Anshika";
 
 const defaultInitialExpenses = [
-  { id: "1", title: "game", name: "game", amount: 223, category: "Entertainment", date: "2026-09-02" },
-  { id: "2", title: "Team Lunch", name: "Team Lunch", amount: 123, category: "Food", date: "2026-09-02" },
+  { id: "1", title: "game", name: "game", amount: 223, category: "Entertainment", date: "2026-09-02", payment_method: "UPI" },
+  { id: "2", title: "Team Lunch", name: "Team Lunch", amount: 123, category: "Food", date: "2026-09-02", payment_method: "UPI" },
 ];
 
 const defaultCategoryBudgets = {
