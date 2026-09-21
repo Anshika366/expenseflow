@@ -85,7 +85,7 @@ export default function Sidebar({ darkMode, setDarkMode }) {
   return (
     <>
       {/* 1. Desktop Sidebar (Visible on lg screens) */}
-      <aside className="hidden lg:flex w-64 shrink-0 sticky top-5 sm:top-6 self-start max-h-[calc(100vh-2.5rem)] sm:max-h-[calc(100vh-3rem)] h-fit bg-white dark:bg-[#0B0F19] border border-slate-200/80 dark:border-slate-800/80 shadow-sm rounded-[28px] flex-col justify-between p-5 sm:p-6 transition-all duration-500 ease-in-out relative z-30 text-left overflow-y-auto no-scrollbar">
+      <aside className="hidden lg:flex w-64 shrink-0 h-auto self-stretch bg-white dark:bg-[#0B0F19] border border-slate-200/80 dark:border-slate-800/80 shadow-sm rounded-[28px] flex-col justify-between p-6 transition-all duration-500 ease-in-out relative z-30 text-left">
         <style>{`
           @keyframes logoFloat {
             0%, 100% { transform: translateY(0px); }
