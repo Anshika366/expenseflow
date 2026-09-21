@@ -140,13 +140,22 @@ export default function ExpenseHistory() {
       selectedPayment === "All" ||
       expPayment.toLowerCase() === selectedPayment.toLowerCase();
 
-    const matchesDate =
-      !selectedDate ||
-      (exp.date && exp.date.startsWith(selectedDate));
+    let matchesDate = true;
+    if (selectedDate) {
+      if (exp.date) {
+        const expDateStr = String(exp.date).split("T")[0];
+        matchesDate = expDateStr === selectedDate || String(exp.date).startsWith(selectedDate);
+      } else {
+        matchesDate = false;
+      }
+    }
 
     const expAmt = Number(exp.amount) || 0;
-    const matchesMinAmount = !minAmount || expAmt >= Number(minAmount);
-    const matchesMaxAmount = !maxAmount || expAmt <= Number(maxAmount);
+    const minVal = minAmount !== "" && minAmount !== null ? Number(minAmount) : null;
+    const maxVal = maxAmount !== "" && maxAmount !== null ? Number(maxAmount) : null;
+
+    const matchesMinAmount = minVal === null || isNaN(minVal) || expAmt >= minVal;
+    const matchesMaxAmount = maxVal === null || isNaN(maxVal) || expAmt <= maxVal;
 
     return (
       matchesSearch &&
