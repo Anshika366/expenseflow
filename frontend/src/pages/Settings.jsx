@@ -175,8 +175,8 @@ export default function Settings({ darkMode, setDarkMode }) {
                   payment_method: item.payment_method || item.paymentMethod || item.method || "UPI",
                   notes: item.notes || "",
                 });
-              } catch {
-                /* ignore */
+              } catch (e) {
+                void e;
               }
             }
             await fetchAppData();
@@ -231,8 +231,8 @@ export default function Settings({ darkMode, setDarkMode }) {
             try {
               await api.delete(`/expenses/${exp.id}`);
               deletedCount++;
-            } catch {
-              /* ignore */
+            } catch (e) {
+              void e;
             }
           }
         }

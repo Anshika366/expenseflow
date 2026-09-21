@@ -110,7 +110,6 @@ export default function Budgets() {
 
   return (
     <div className="w-full space-y-6 text-left font-sans text-slate-800 dark:text-slate-100 pb-10">
-      {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/90 ring-1 ring-slate-900/5 dark:ring-white/10 p-6 rounded-[28px] shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-[#5B4CFF]/10 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
@@ -137,7 +136,6 @@ export default function Budgets() {
         </button>
       </div>
 
-      {/* Overview Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div className="group relative overflow-hidden bg-gradient-to-br from-[#5B4CFF] via-indigo-600 to-[#3B82F6] text-white p-6 rounded-[28px] shadow-lg shadow-indigo-500/20 hover:shadow-[0_20px_45px_rgba(91,76,255,0.45)] dark:hover:shadow-[0_22px_55px_rgba(91,76,255,0.65)] hover:-translate-y-1.5 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between min-h-[160px] cursor-pointer border border-indigo-400/40 ring-1 ring-white/20">
           <div className="absolute top-0 right-0 w-36 h-36 bg-white/20 dark:bg-white/30 rounded-full blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-175 opacity-40 group-hover:opacity-80" />
@@ -192,7 +190,6 @@ export default function Budgets() {
         </div>
       </div>
 
-      {/* Edit Category Limit Form */}
       {isEditing && (
         <div className="bg-white dark:bg-[#0B0F19] border border-indigo-300 dark:border-indigo-800/80 ring-1 ring-indigo-500/20 p-6 rounded-[28px] shadow-xl animate-card-entrance">
           <h3 className="text-sm font-black text-[#0F172A] dark:text-white mb-3">
@@ -304,7 +301,6 @@ export default function Budgets() {
         </div>
       )}
 
-      {/* Category Budget Cards */}
       <div className="bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/90 ring-1 ring-slate-900/5 dark:ring-white/10 rounded-[28px] p-6 md:p-7 shadow-sm">
         <h3 className="text-base font-black text-[#0F172A] dark:text-white mb-6 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-[#5B4CFF] dark:text-indigo-300 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40 shadow-sm">

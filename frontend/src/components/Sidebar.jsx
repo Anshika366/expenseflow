@@ -83,7 +83,6 @@ export default function Sidebar({ darkMode, setDarkMode }) {
 
   return (
     <>
-      {/* 1. Desktop Sidebar (Visible on lg screens) */}
       <aside className="hidden lg:flex w-64 shrink-0 h-auto self-stretch bg-white dark:bg-[#0B0F19] border border-slate-200/80 dark:border-slate-800/80 shadow-sm rounded-[28px] flex-col justify-between p-6 transition-all duration-500 ease-in-out relative z-30 text-left">
         <style>{`
           @keyframes logoFloat {
@@ -184,7 +183,6 @@ export default function Sidebar({ darkMode, setDarkMode }) {
         </div>
       </aside>
 
-      {/* 2. Mobile & Tablet Header Bar (Visible on < lg screens) */}
       <div className="lg:hidden w-full flex items-center justify-between bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 px-4 py-3 rounded-2xl shadow-sm mb-4 sticky top-2 z-40">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 bg-gradient-to-tr from-[#5B4CFF] to-[#2F80ED] rounded-lg flex items-center justify-center font-black text-white text-xs shadow-md shadow-indigo-500/20">
@@ -210,7 +208,6 @@ export default function Sidebar({ darkMode, setDarkMode }) {
         </div>
       </div>
 
-      {/* 3. Mobile Slide-Out Drawer Overlay (Visible when hamburger clicked on < lg) */}
       {mobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex justify-end animate-in fade-in duration-200">
           <div className="w-72 bg-white dark:bg-[#0B0F19] h-full p-6 flex flex-col justify-between shadow-2xl border-l border-slate-200 dark:border-slate-800 overflow-y-auto">
@@ -274,7 +271,6 @@ export default function Sidebar({ darkMode, setDarkMode }) {
         </div>
       )}
 
-      {/* 4. Mobile Bottom Navigation Bar (Fixed at bottom on < lg screens) */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-xl border-t border-slate-200/90 dark:border-slate-800/90 px-2 py-2 flex items-center justify-around shadow-[0_-10px_25px_rgba(0,0,0,0.08)] dark:shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
         {mobileNavItems.map((item) => {
           const Icon = item.icon;

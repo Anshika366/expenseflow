@@ -120,9 +120,7 @@ export default function Reports() {
 
   return (
     <div className="space-y-6 sm:space-y-8 pb-12 text-left font-sans text-slate-800 dark:text-slate-100 max-w-6xl mx-auto">
-      {/* Header Banner */}
       <div className="group relative bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-7 md:p-8 rounded-[28px] sm:rounded-[36px] shadow-sm hover:shadow-[0_20px_50px_rgba(59,130,246,0.18)] transition-all duration-500 overflow-hidden">
-        {/* Glow Effects */}
         <div className="absolute -top-20 -right-20 w-80 h-80 bg-gradient-to-bl from-blue-500/20 via-cyan-500/15 to-transparent rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-gradient-to-tr from-[#5B4CFF]/20 via-purple-500/15 to-transparent rounded-full blur-3xl pointer-events-none" />
 
@@ -164,7 +162,6 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* Main Table & Filter Container */}
       <div className="bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-[28px] sm:rounded-[36px] p-5 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800/80">
           <div className="flex items-center gap-3">
@@ -225,7 +222,6 @@ export default function Reports() {
           </div>
         </div>
 
-        {/* Statement KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="group bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 hover:border-indigo-300 dark:hover:border-indigo-800 hover:shadow-md transition-all duration-300 flex items-center justify-between">
             <div>
@@ -270,7 +266,6 @@ export default function Reports() {
           </div>
         </div>
 
-        {/* Transactions Table */}
         <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
           <table className="w-full min-w-[550px] text-left text-xs border-collapse">
             <thead>

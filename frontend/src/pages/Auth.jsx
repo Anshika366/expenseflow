@@ -172,7 +172,6 @@ export default function Auth() {
         }
       `}</style>
 
-      {/* Subtle Light Grid Pattern */}
       <svg className="absolute inset-0 w-full h-full opacity-[0.25] pointer-events-none transition-opacity duration-500" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
         <defs>
           <pattern id="auth-grid-pattern" width="32" height="32" patternUnits="userSpaceOnUse">
@@ -182,7 +181,6 @@ export default function Auth() {
         <rect width="100%" height="100%" fill="url(#auth-grid-pattern)" />
       </svg>
 
-      {/* Ambient Soft Glow Orbs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full blur-[140px] bg-indigo-200/50 transition-all duration-500 ease-in-out" />
         <div className="absolute top-[-10%] right-[-10%] w-80 h-80 rounded-full blur-[120px] bg-indigo-100/70 transition-all duration-500 ease-in-out" />

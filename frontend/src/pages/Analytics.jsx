@@ -80,9 +80,7 @@ export default function Analytics() {
 
   return (
     <div className="space-y-6 sm:space-y-8 pb-12 text-left max-w-6xl mx-auto">
-      {/* Glossy Header */}
       <div className="group relative bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-7 md:p-8 rounded-[28px] sm:rounded-[36px] shadow-sm hover:shadow-[0_20px_50px_rgba(99,102,241,0.18)] transition-all duration-500 overflow-hidden">
-        {/* Glow Effects */}
         <div className="absolute -top-20 -right-20 w-80 h-80 bg-gradient-to-bl from-[#5B4CFF]/20 via-purple-500/15 to-transparent rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-gradient-to-tr from-cyan-500/20 via-blue-500/15 to-transparent rounded-full blur-3xl pointer-events-none" />
 
@@ -123,9 +121,7 @@ export default function Analytics() {
         </div>
       </div>
 
-      {/* KPI Cards with Glowing Hover Accent */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        {/* Total Spent */}
         <div className="group relative bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-6 rounded-[24px] sm:rounded-[28px] shadow-sm hover:shadow-[0_15px_35px_rgba(244,63,94,0.18)] hover:border-rose-400/50 dark:hover:border-rose-500/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
           <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-rose-500/15 to-transparent rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div className="flex items-center justify-between mb-3 relative z-10">
@@ -144,7 +140,6 @@ export default function Analytics() {
           </span>
         </div>
 
-        {/* Remaining Balance */}
         <div className="group relative bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-6 rounded-[24px] sm:rounded-[28px] shadow-sm hover:shadow-[0_15px_35px_rgba(99,102,241,0.18)] hover:border-indigo-400/50 dark:hover:border-indigo-500/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
           <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-indigo-500/15 to-transparent rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div className="flex items-center justify-between mb-3 relative z-10">
@@ -179,7 +174,6 @@ export default function Analytics() {
           )}
         </div>
 
-        {/* Avg per Transaction */}
         <div className="group relative bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-6 rounded-[24px] sm:rounded-[28px] shadow-sm hover:shadow-[0_15px_35px_rgba(245,158,11,0.18)] hover:border-amber-400/50 dark:hover:border-amber-500/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
           <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-amber-500/15 to-transparent rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div className="flex items-center justify-between mb-3 relative z-10">
@@ -198,7 +192,6 @@ export default function Analytics() {
           </span>
         </div>
 
-        {/* Typical Expense */}
         <div className="group relative bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-6 rounded-[24px] sm:rounded-[28px] shadow-sm hover:shadow-[0_15px_35px_rgba(16,185,129,0.18)] hover:border-emerald-400/50 dark:hover:border-emerald-500/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
           <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-emerald-500/15 to-transparent rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div className="flex items-center justify-between mb-3 relative z-10">
@@ -218,7 +211,6 @@ export default function Analytics() {
         </div>
       </div>
 
-      {/* Main Charts Section */}
       <div className="grid grid-cols-1 gap-6">
         <ChartsSection
           categorySummary={categorySummary}
@@ -228,7 +220,6 @@ export default function Analytics() {
         />
       </div>
 
-      {/* Neon Insights Banner */}
       <div className="group relative p-6 bg-gradient-to-r from-indigo-600/15 via-purple-600/10 to-blue-600/15 dark:from-indigo-950/60 dark:via-purple-950/50 dark:to-blue-950/60 border border-indigo-200/80 dark:border-indigo-800/60 rounded-[28px] sm:rounded-[32px] shadow-sm hover:shadow-lg hover:shadow-indigo-500/15 transition-all duration-500 text-left overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-indigo-500/20 via-purple-500/15 to-transparent rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
 
