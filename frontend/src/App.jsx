@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Reports = lazy(() => import("./pages/Reports"));
+const Analytics = lazy(() => import("./pages/Analytics"));
 
 function PageLoader() {
   return (
@@ -62,8 +63,8 @@ export default function App() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/auth" element={<Auth darkMode={darkMode} />} />
-          <Route path="/reset-password" element={<Auth darkMode={darkMode} />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<Auth />} />
 
           <Route element={<ProtectedRoute />}>
             <Route
@@ -79,7 +80,7 @@ export default function App() {
               <Route path="/add-expense" element={<AddExpense />} />
               <Route path="/history" element={<ExpenseHistory />} />
               <Route path="/budgets" element={<Budgets />} />
-              <Route path="/analytics" element={<Reports />} />
+              <Route path="/analytics" element={<Analytics />} />
               <Route path="/reports" element={<Reports />} />
               <Route
                 path="/settings"

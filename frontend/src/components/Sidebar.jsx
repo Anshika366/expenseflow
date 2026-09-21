@@ -44,7 +44,7 @@ export default function Sidebar({ darkMode, setDarkMode }) {
     },
     {
       name: "Analytics",
-      path: "/reports",
+      path: "/analytics",
       icon: TrendingUp,
       activeColor: "text-cyan-500",
       pillBg: "bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-500",
@@ -76,6 +76,7 @@ export default function Sidebar({ darkMode, setDarkMode }) {
     { name: "Home", path: "/dashboard", icon: LayoutDashboard },
     { name: "Expenses", path: "/expenses", icon: ReceiptIndianRupee },
     { name: "History", path: "/history", icon: History },
+    { name: "Analytics", path: "/analytics", icon: TrendingUp },
     { name: "Budgets", path: "/budgets", icon: PieChart },
     { name: "Reports", path: "/reports", icon: FileText },
     { name: "Settings", path: "/settings", icon: SettingsIcon },
