@@ -127,8 +127,8 @@ FastAPI API documentation is available at **http://localhost:8000/docs**
 
 ## Live Demo
 
-- **Frontend Application:** Coming Soon
-- **Backend API Docs:** Coming Soon
+- **Frontend Application:** https://expenseflow-flax.vercel.app/
+
 
 ## Future Improvements
 
