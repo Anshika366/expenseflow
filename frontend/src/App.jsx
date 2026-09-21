@@ -26,9 +26,9 @@ function PageLoader() {
 
 function AppLayout({ darkMode, setDarkMode }) {
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-[#FAFAFD] dark:bg-[#050816] text-slate-900 dark:text-[#E5E7EB] font-sans transition-colors duration-500 overflow-x-hidden selection:bg-[#5B4CFF]/30 selection:text-[#5B4CFF] p-3 sm:p-5 md:p-6 pb-20 lg:pb-6 gap-3 sm:gap-5 items-stretch">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#FAFAFD] dark:bg-[#050816] text-slate-900 dark:text-[#E5E7EB] font-sans transition-colors duration-500 overflow-x-hidden selection:bg-[#5B4CFF]/30 selection:text-[#5B4CFF] p-3 sm:p-5 md:p-6 pb-20 lg:pb-6 gap-3 sm:gap-5 items-start">
       <Sidebar darkMode={darkMode} setDarkMode={setDarkMode} />
-      <main className="flex-1 min-w-0 relative flex flex-col justify-between">
+      <main className="flex-1 min-w-0 relative flex flex-col justify-between self-stretch">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-tr from-[#5B4CFF]/10 via-[#8B5CF6]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-[#2F80ED]/10 via-[#EC4899]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex-1 flex flex-col justify-between">
