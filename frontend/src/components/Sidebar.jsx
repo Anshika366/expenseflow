@@ -12,7 +12,6 @@ import {
   Crown,
   Menu,
   X,
-  PlusCircle,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 

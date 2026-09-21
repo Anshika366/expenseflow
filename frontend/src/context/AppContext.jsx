@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer, useEffect, useCallback } from "react";
 import api, { getBudgets, updateBudgets } from "../services/api";
 
@@ -177,7 +178,7 @@ export function AppProvider({ children }) {
       localStorage.setItem("userName", res.data.name);
       localStorage.setItem("isAuthenticated", "true");
       await fetchAppData();
-    } catch (err) {
+    } catch {
       localStorage.removeItem("token");
       localStorage.removeItem("isAuthenticated");
       dispatch({

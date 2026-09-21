@@ -59,7 +59,8 @@ export default function Reports() {
 
   const filteredExpenses = expenses.filter((exp) => {
     if (dateFilter === "all") return true;
-    const expDate = new Date(exp.date || Date.now());
+    if (!exp.date) return false;
+    const expDate = new Date(exp.date);
     const now = new Date();
     if (dateFilter === "month") {
       return (

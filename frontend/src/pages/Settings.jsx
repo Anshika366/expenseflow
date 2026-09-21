@@ -33,7 +33,7 @@ export default function Settings({ darkMode, setDarkMode }) {
       try {
         const res = await api.get("/settings/export");
         exportData = res.data;
-      } catch (e) {
+      } catch {
         exportData = {
           version: "1.0",
           exportDate: new Date().toISOString(),
@@ -60,7 +60,7 @@ export default function Settings({ darkMode, setDarkMode }) {
         type: "success",
         message: "JSON Data Backup exported and downloaded successfully!",
       });
-    } catch (err) {
+    } catch {
       setFeedback({
         type: "error",
         message: "Export failed. Please check your data and try again.",
@@ -78,7 +78,7 @@ export default function Settings({ darkMode, setDarkMode }) {
       try {
         const res = await api.get("/settings/backup");
         backupData = res.data;
-      } catch (e) {
+      } catch {
         backupData = {
           version: "1.0",
           backupDate: new Date().toISOString(),
@@ -107,7 +107,7 @@ export default function Settings({ darkMode, setDarkMode }) {
         type: "success",
         message: "Full system snapshot backup downloaded successfully!",
       });
-    } catch (err) {
+    } catch {
       setFeedback({
         type: "error",
         message: "Backup generation failed. Please try again.",
@@ -146,7 +146,7 @@ export default function Settings({ darkMode, setDarkMode }) {
         let parsedData;
         try {
           parsedData = JSON.parse(text);
-        } catch (jsonErr) {
+        } catch {
           throw new Error("Invalid JSON formatting in uploaded file.");
         }
 
@@ -158,7 +158,7 @@ export default function Settings({ darkMode, setDarkMode }) {
             type: "success",
             message: `Import Completed! ${imported} new transaction(s) imported, ${duplicates} duplicate(s) skipped.`,
           });
-        } catch (apiErr) {
+        } catch {
           const items =
             parsedData.expenses ||
             parsedData.appState?.expenses ||
@@ -175,7 +175,9 @@ export default function Settings({ darkMode, setDarkMode }) {
                   payment_method: item.payment_method || item.paymentMethod || item.method || "UPI",
                   notes: item.notes || "",
                 });
-              } catch (singleErr) {}
+              } catch {
+                /* ignore */
+              }
             }
             await fetchAppData();
             setFeedback({
@@ -222,14 +224,16 @@ export default function Settings({ darkMode, setDarkMode }) {
       try {
         const res = await api.delete("/settings/delete-all");
         deletedCount = res.data?.deletedCount ?? 0;
-      } catch (e) {
+      } catch {
         const expensesToDelete = state.expenses || [];
         for (const exp of expensesToDelete) {
           if (exp.id) {
             try {
               await api.delete(`/expenses/${exp.id}`);
               deletedCount++;
-            } catch (err) {}
+            } catch {
+              /* ignore */
+            }
           }
         }
       }

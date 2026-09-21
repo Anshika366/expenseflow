@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   Search,
   ChevronDown,
+  ChevronUp,
   ArrowUp,
   ArrowDown,
   ArrowLeft,
@@ -184,10 +185,6 @@ export default function ExpenseHistory() {
       setSortBy(column);
       setSortOrder("asc");
     }
-  };
-
-  const toggleSortOrder = () => {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
   const renderSortIcon = (column) => {

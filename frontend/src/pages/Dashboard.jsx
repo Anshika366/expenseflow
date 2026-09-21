@@ -1,15 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import {
   Search,
   Bell,
   ChevronDown,
-  Calendar,
-  Wallet,
-  CreditCard,
-  Receipt,
   AlertTriangle,
   Zap,
   Activity,
@@ -31,8 +26,6 @@ export default function Dashboard({ darkMode }) {
   const { state, addFunds } = useApp();
   const navigate = useNavigate();
   const [depositAmount, setDepositAmount] = useState("");
-  const [, setValidationError] = useState("");
-  const [, setCurrentTime] = useState("");
 
   const [timeFilter, setTimeFilter] = useState("Today");
   const [isCard2DropdownOpen, setIsCard2DropdownOpen] = useState(false);
@@ -47,38 +40,16 @@ export default function Dashboard({ darkMode }) {
     document.addEventListener("mousedown", handleClickOutsideCard2);
     return () => document.removeEventListener("mousedown", handleClickOutsideCard2);
   }, []);
-  const [customStartDate, setCustomStartDate] = useState("");
-  const [customEndDate, setCustomEndDate] = useState("");
-  const [appliedCustomRange, setAppliedCustomRange] = useState(null);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const [isAddFundsModalOpen, setIsAddFundsModalOpen] = useState(false);
   const [addFundsInput, setAddFundsInput] = useState("");
 
-  const triggerRef = useRef(null);
-  const portalRef = useRef(null);
   const searchRef = useRef(null);
 
   const user = state.user || {};
   const userName = user.name || "Anshika";
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleDateString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-        })
-      );
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 60000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -90,13 +61,6 @@ export default function Dashboard({ darkMode }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleApplyCustomRange = (e) => {
-    e.preventDefault();
-    if (customStartDate && customEndDate) {
-      setAppliedCustomRange({ start: customStartDate, end: customEndDate });
-    }
-  };
 
   const handleAddFundsSubmit = (e) => {
     e.preventDefault();
@@ -179,13 +143,8 @@ export default function Dashboard({ darkMode }) {
           );
         }
 
-        case "Custom Range": {
-          if (!appliedCustomRange?.start || !appliedCustomRange?.end) return true;
-          return (
-            itemDateStr >= appliedCustomRange.start &&
-            itemDateStr <= appliedCustomRange.end
-          );
-        }
+        case "Custom Range":
+          return true;
 
         default:
           return true;
@@ -558,6 +517,30 @@ export default function Dashboard({ darkMode }) {
             onKeyDown={handleSearchKeyDown}
             className="w-full text-xs bg-slate-50/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-full pl-10 pr-10 py-2 focus:outline-none focus:border-[#5B4CFF] focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200 text-slate-800 dark:text-slate-100 placeholder-slate-400 font-medium"
           />
+
+          {isSearchOpen && searchQuery.trim() && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 overflow-hidden max-h-60 overflow-y-auto">
+              {searchResults.length > 0 ? (
+                searchResults.map((res) => (
+                  <div
+                    key={res.id}
+                    onClick={() => handleResultClick(res.name || res.id)}
+                    className="px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer flex items-center justify-between text-xs border-b border-slate-100 dark:border-slate-800/40 last:border-0"
+                  >
+                    <div>
+                      <span className="font-extrabold text-slate-900 dark:text-white block">{res.name}</span>
+                      <span className="text-[10px] text-slate-400">{res.category} • {res.date}</span>
+                    </div>
+                    <span className="font-black text-[#5B4CFF]">₹{res.amount}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="px-4 py-3 text-xs text-slate-400 text-center font-medium">
+                  No matching expenses found
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3">

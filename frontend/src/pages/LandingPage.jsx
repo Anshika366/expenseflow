@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroSection from "../components/HeroSection";
-import FeaturesSection from "../components/FeaturesSection";
 
 export default function LandingPage() {
   const navigate = useNavigate();

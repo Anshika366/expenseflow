@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Calendar, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import heroWallet3D from "../assets/hero_wallet_3d.png";
 
 export default function DashboardHero({

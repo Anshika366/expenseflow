@@ -12,11 +12,6 @@ export default function HeroSection({
   setInputAmount,
   handleAddNewExpense,
 }) {
-  const totalAmountSpent = expenses.reduce(
-    (acc, curr) => acc + (Number(curr.amount) || 0),
-    0
-  );
-
   const [selectedRange, setSelectedRange] = useState("This Month");
   const [isRangeOpen, setIsRangeOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
