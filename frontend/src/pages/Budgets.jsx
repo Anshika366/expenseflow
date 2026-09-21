@@ -27,25 +27,60 @@ export default function Budgets() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const categoryBudgets = state.categoryBudgets || {
+  const masterCategories = [
+    "Food",
+    "Shopping",
+    "Travel",
+    "Bills",
+    "Education",
+    "Entertainment",
+    "Healthcare",
+    "Fuel",
+    "Rent",
+    "Transport",
+    "Others",
+  ];
+
+  const categoryIconMap = {
+    Food: "🍕",
+    Shopping: "🛍️",
+    Travel: "✈️",
+    Bills: "⚡",
+    Education: "🎓",
+    Entertainment: "🎮",
+    Healthcare: "🏥",
+    Fuel: "⛽",
+    Rent: "🏠",
+    Transport: "🚕",
+    Others: "📦",
+  };
+
+  const defaultBudgets = {
     Food: 4000,
     Shopping: 3000,
+    Travel: 2500,
     Bills: 5000,
-    Transport: 2000,
+    Education: 3000,
     Entertainment: 1500,
     Healthcare: 2500,
+    Fuel: 2000,
+    Rent: 8000,
+    Transport: 2000,
     Others: 1000,
   };
 
-  const categoryIconMap = {
-    Food: "🍔",
-    Shopping: "🛍️",
-    Bills: "⚡",
-    Transport: "🚕",
-    Entertainment: "🎮",
-    Healthcare: "❤️",
-    Others: "📦",
+  const categoryBudgets = {
+    ...defaultBudgets,
+    ...(state.categoryBudgets || {}),
   };
+
+  const expenseCategories = (state.expenses || [])
+    .map((e) => e.category)
+    .filter(Boolean);
+
+  const categories = Array.from(
+    new Set([...masterCategories, ...Object.keys(categoryBudgets), ...expenseCategories])
+  );
 
   const getSpentForCategory = (catName) => {
     const expenses = state.expenses || [];
@@ -54,9 +89,7 @@ export default function Budgets() {
       .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
   };
 
-  const categories = Object.keys(categoryBudgets);
-
-  const totalBudget = Object.values(categoryBudgets).reduce((a, b) => a + b, 0);
+  const totalBudget = categories.reduce((sum, cat) => sum + (categoryBudgets[cat] || 0), 0);
   const totalSpent = categories.reduce((sum, cat) => sum + getSpentForCategory(cat), 0);
   const totalRemaining = totalBudget - totalSpent;
   const overallPercentage = Math.min(Math.round((totalSpent / (totalBudget || 1)) * 100), 100);
@@ -75,6 +108,7 @@ export default function Budgets() {
 
   return (
     <div className="w-full space-y-6 text-left font-sans text-slate-800 dark:text-slate-100 pb-10">
+      {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/90 ring-1 ring-slate-900/5 dark:ring-white/10 p-6 rounded-[28px] shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-[#5B4CFF]/10 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
@@ -101,6 +135,7 @@ export default function Budgets() {
         </button>
       </div>
 
+      {/* Overview Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div className="group relative overflow-hidden bg-gradient-to-br from-[#5B4CFF] via-indigo-600 to-[#3B82F6] text-white p-6 rounded-[28px] shadow-lg shadow-indigo-500/20 hover:shadow-[0_20px_45px_rgba(91,76,255,0.45)] dark:hover:shadow-[0_22px_55px_rgba(91,76,255,0.65)] hover:-translate-y-1.5 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between min-h-[160px] cursor-pointer border border-indigo-400/40 ring-1 ring-white/20">
           <div className="absolute top-0 right-0 w-36 h-36 bg-white/20 dark:bg-white/30 rounded-full blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-175 opacity-40 group-hover:opacity-80" />
@@ -155,13 +190,14 @@ export default function Budgets() {
         </div>
       </div>
 
+      {/* Edit Category Limit Form */}
       {isEditing && (
         <div className="bg-white dark:bg-[#0B0F19] border border-indigo-300 dark:border-indigo-800/80 ring-1 ring-indigo-500/20 p-6 rounded-[28px] shadow-xl animate-card-entrance">
           <h3 className="text-sm font-black text-[#0F172A] dark:text-white mb-3">
             Update Category Limit
           </h3>
           <form onSubmit={handleUpdateBudget} className="flex flex-col sm:flex-row gap-3">
-            <div className="relative min-w-[200px]" ref={dropdownRef}>
+            <div className="relative min-w-[220px]" ref={dropdownRef}>
               <button
                 type="button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -180,7 +216,7 @@ export default function Budgets() {
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0B0F19] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-1.5 shadow-[0_16px_36px_rgba(0,0,0,0.15)] dark:shadow-[0_18px_40px_rgba(0,0,0,0.7)] z-50 animate-in fade-in zoom-in duration-200">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0B0F19] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-1.5 shadow-[0_16px_36px_rgba(0,0,0,0.15)] dark:shadow-[0_18px_40px_rgba(0,0,0,0.7)] z-50 animate-in fade-in zoom-in duration-200 max-h-60 overflow-y-auto custom-scrollbar">
                   {categories.map((cat) => {
                     const isSelected = cat === selectedCategory;
                     return (
@@ -237,6 +273,7 @@ export default function Budgets() {
         </div>
       )}
 
+      {/* Category Budget Cards */}
       <div className="bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800/90 ring-1 ring-slate-900/5 dark:ring-white/10 rounded-[28px] p-6 md:p-7 shadow-sm">
         <h3 className="text-base font-black text-[#0F172A] dark:text-white mb-6 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-[#5B4CFF] dark:text-indigo-300 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
@@ -247,9 +284,9 @@ export default function Budgets() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {categories.map((catName) => {
-            const limit = categoryBudgets[catName];
+            const limit = categoryBudgets[catName] || 0;
             const spent = getSpentForCategory(catName);
-            const rawPercent = Math.min(Math.round((spent / limit) * 100), 100);
+            const rawPercent = limit > 0 ? Math.min(Math.round((spent / limit) * 100), 100) : spent > 0 ? 100 : 0;
             const barWidthPercent = spent > 0 ? Math.max(5, rawPercent) : 0;
             const remaining = limit - spent;
             const icon = categoryIconMap[catName] || "📦";
@@ -258,7 +295,7 @@ export default function Budgets() {
             let statusText = "Safe";
             let gradientFill = "from-[#5B4CFF] to-[#3B82F6]";
 
-            if (rawPercent >= 100) {
+            if (rawPercent >= 100 && limit > 0) {
               statusBadge = "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300 border-rose-200/60 dark:border-rose-900/40";
               statusText = "Exceeded";
               gradientFill = "from-rose-500 to-red-600";
