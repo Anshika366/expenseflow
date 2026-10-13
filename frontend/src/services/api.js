@@ -41,6 +41,9 @@ api.interceptors.response.use(
 
 export const getBudgets = () => api.get("/budgets");
 export const updateBudgets = (data) => api.put("/budgets", data);
+export const getReports = () => api.get("/reports");
+export const getMonthlyReport = () => api.get("/reports/monthly");
+export const getCategoryReport = () => api.get("/reports/category");
 
 export default api;
 

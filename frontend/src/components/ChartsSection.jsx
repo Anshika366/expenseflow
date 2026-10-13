@@ -9,28 +9,39 @@ export default function ChartsSection({
 }) {
   const [showAll, setShowAll] = useState(false);
 
-  const daysOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const weekMap = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+  // Generate last 6 calendar months in chronological order
+  const now = new Date();
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthsData = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = monthNames[d.getMonth()];
+    monthsData.push({ key, label, fullMonth: `${monthNames[d.getMonth()]} ${d.getFullYear()}` });
+  }
+
+  const monthMap = {};
+  monthsData.forEach((m) => {
+    monthMap[m.key] = 0;
+  });
 
   expenses.forEach((exp) => {
-    if (exp.date) {
-      const d = new Date(exp.date);
-      if (!isNaN(d.getTime())) {
-        const name = weekDays[d.getDay()];
-        if (weekMap[name] !== undefined) {
-          weekMap[name] += Number(exp.amount) || 0;
-        }
+    if (exp.date && exp.date.length >= 7) {
+      const key = exp.date.slice(0, 7);
+      if (monthMap[key] !== undefined) {
+        monthMap[key] += Number(exp.amount) || 0;
       }
     }
   });
 
-  const weeklyData = daysOrder.map((day) => ({
-    day,
-    amount: weekMap[day] || 0,
+  const monthlyData = monthsData.map((m) => ({
+    key: m.key,
+    day: m.label,
+    fullMonth: m.fullMonth,
+    amount: monthMap[m.key] || 0,
   }));
 
-  const maxWeeklyAmount = Math.max(...weeklyData.map((w) => w.amount), 0);
+  const maxWeeklyAmount = Math.max(...monthlyData.map((w) => w.amount), 0);
 
   const displayedCategories = showAll
     ? categorySummary
@@ -152,17 +163,17 @@ export default function ChartsSection({
               <div>
                 <div className="flex items-center gap-1.5">
                   <h2 className="font-black text-xs sm:text-sm uppercase tracking-wider text-slate-900 dark:text-white">
-                    Weekly Spending
+                    Month-over-Month Spending
                   </h2>
                   <TrendingUp size={14} className="text-emerald-500" />
                 </div>
                 <span className="text-[11px] sm:text-xs font-medium text-slate-400 dark:text-slate-500">
-                  Daily expense pattern this week
+                  Total expenses across calendar months
                 </span>
               </div>
             </div>
             <span className="shrink-0 text-[11px] font-extrabold text-[#3B82F6] dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/80 px-3 py-1.5 rounded-2xl border border-blue-200/80 dark:border-blue-800/60 shadow-sm">
-              7 Days Active
+              Past 6 Months
             </span>
           </div>
 
@@ -172,12 +183,12 @@ export default function ChartsSection({
                 <BarChart3 size={22} />
               </div>
               <p className="text-xs font-semibold text-slate-400">
-                No weekly spending data recorded yet.
+                No monthly spending data recorded yet.
               </p>
             </div>
           ) : (
             <div className="h-52 flex items-end justify-between gap-2 sm:gap-3.5 pt-4">
-              {weeklyData.map((w) => {
+              {monthlyData.map((w) => {
                 const heightPercent =
                   maxWeeklyAmount > 0 ? Math.max(10, Math.round((w.amount / maxWeeklyAmount) * 100)) : 0;
                 return (

@@ -127,10 +127,13 @@ export default function Settings({ darkMode, setDarkMode }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.endsWith(".json") && file.type !== "application/json") {
+    const isJson = file.name.endsWith(".json") || file.type === "application/json";
+    const isCsv = file.name.endsWith(".csv") || file.type === "text/csv";
+
+    if (!isJson && !isCsv) {
       setFeedback({
         type: "error",
-        message: "Invalid file type. Please upload a valid JSON (.json) backup file.",
+        message: "Invalid file type. Please upload a valid JSON (.json) or CSV (.csv) backup file.",
       });
       e.target.value = "";
       return;
@@ -143,49 +146,129 @@ export default function Settings({ darkMode, setDarkMode }) {
     reader.onload = async (event) => {
       try {
         const text = event.target?.result;
-        let parsedData;
-        try {
-          parsedData = JSON.parse(text);
-        } catch {
-          throw new Error("Invalid JSON formatting in uploaded file.");
-        }
 
-        try {
-          const res = await api.post("/settings/import", parsedData);
-          const { imported = 0, duplicates = 0 } = res.data || {};
+        if (isCsv) {
+          // Parse CSV file
+          const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+          if (lines.length < 2) {
+            throw new Error("CSV file must have a header row and at least one data row.");
+          }
+
+          const rawHeaders = lines[0].split(",").map((h) => h.trim().replace(/^["']|["']$/g, "").toLowerCase());
+          const nameIdx = rawHeaders.findIndex((h) => h.includes("title") || h.includes("name"));
+          const amountIdx = rawHeaders.findIndex((h) => h.includes("amount"));
+          const categoryIdx = rawHeaders.findIndex((h) => h.includes("category"));
+          const dateIdx = rawHeaders.findIndex((h) => h.includes("date"));
+          const methodIdx = rawHeaders.findIndex((h) => h.includes("method") || h.includes("payment"));
+          const descIdx = rawHeaders.findIndex((h) => h.includes("desc") || h.includes("notes"));
+
+          if (nameIdx === -1 || amountIdx === -1) {
+            throw new Error("CSV header must include at least 'Title' and 'Amount' columns.");
+          }
+
+          const validRows = [];
+          let invalidRowCount = 0;
+          const todayStr = new Date().toISOString().split("T")[0];
+
+          for (let i = 1; i < lines.length; i++) {
+            // Regex to handle quoted CSV columns
+            const rowValues = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(",");
+            const clean = rowValues.map((v) => v.trim().replace(/^"|"$/g, "").replace(/""/g, '"'));
+
+            const title = clean[nameIdx] || "";
+            const amtStr = clean[amountIdx] || "";
+            const amt = parseFloat(amtStr.replace(/[^0-9.]/g, ""));
+            const cat = categoryIdx !== -1 && clean[categoryIdx] ? clean[categoryIdx] : "Others";
+            let dt = dateIdx !== -1 && clean[dateIdx] ? clean[dateIdx] : todayStr;
+            const method = methodIdx !== -1 && clean[methodIdx] ? clean[methodIdx] : "UPI";
+            const desc = descIdx !== -1 && clean[descIdx] ? clean[descIdx].slice(0, 200) : "";
+
+            // Validate date format YYYY-MM-DD
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dt)) {
+              dt = todayStr;
+            }
+
+            if (!title || isNaN(amt) || amt <= 0) {
+              invalidRowCount++;
+              continue;
+            }
+
+            validRows.push({
+              name: title,
+              amount: amt,
+              category: cat,
+              date: dt,
+              payment_method: method,
+              description: desc,
+            });
+          }
+
+          if (validRows.length === 0) {
+            throw new Error(`No valid transaction rows found in CSV (${invalidRowCount} invalid rows).`);
+          }
+
+          // Import rows via API
+          let imported = 0;
+          for (const item of validRows) {
+            try {
+              await api.post("/expenses", item);
+              imported++;
+            } catch {
+              // skip duplicates or failed rows
+            }
+          }
+
           await fetchAppData();
           setFeedback({
             type: "success",
-            message: `Import Completed! ${imported} new transaction(s) imported, ${duplicates} duplicate(s) skipped.`,
+            message: `CSV Import Completed! ${imported} record(s) imported into your ledger${invalidRowCount > 0 ? `, ${invalidRowCount} invalid row(s) skipped` : ""}.`,
           });
-        } catch {
-          const items =
-            parsedData.expenses ||
-            parsedData.appState?.expenses ||
-            (Array.isArray(parsedData) ? parsedData : []);
+        } else {
+          // JSON Import
+          let parsedData;
+          try {
+            parsedData = JSON.parse(text);
+          } catch {
+            throw new Error("Invalid JSON formatting in uploaded file.");
+          }
 
-          if (items.length > 0) {
-            for (const item of items) {
-              try {
-                await api.post("/expenses", {
-                  name: item.name || item.title || "Imported Item",
-                  amount: Number(item.amount) || 0,
-                  category: item.category || "Others",
-                  date: item.date || new Date().toISOString().split("T")[0],
-                  payment_method: item.payment_method || item.paymentMethod || item.method || "UPI",
-                  notes: item.notes || "",
-                });
-              } catch (e) {
-                void e;
-              }
-            }
+          try {
+            const res = await api.post("/settings/import", parsedData);
+            const { imported = 0, duplicates = 0 } = res.data || {};
             await fetchAppData();
             setFeedback({
               type: "success",
-              message: `Import Completed! Imported ${items.length} records into your ledger.`,
+              message: `Import Completed! ${imported} new transaction(s) imported, ${duplicates} duplicate(s) skipped.`,
             });
-          } else {
-            throw new Error("No valid transactions found in the uploaded file.");
+          } catch {
+            const items =
+              parsedData.expenses ||
+              parsedData.appState?.expenses ||
+              (Array.isArray(parsedData) ? parsedData : []);
+
+            if (items.length > 0) {
+              for (const item of items) {
+                try {
+                  await api.post("/expenses", {
+                    name: item.name || item.title || "Imported Item",
+                    amount: Number(item.amount) || 0,
+                    category: item.category || "Others",
+                    date: item.date || new Date().toISOString().split("T")[0],
+                    payment_method: item.payment_method || item.paymentMethod || item.method || "UPI",
+                    description: item.description || item.notes || "",
+                  });
+                } catch {
+                  // skip
+                }
+              }
+              await fetchAppData();
+              setFeedback({
+                type: "success",
+                message: `Import Completed! Imported ${items.length} records into your ledger.`,
+              });
+            } else {
+              throw new Error("No valid transactions found in the uploaded file.");
+            }
           }
         }
       } catch (err) {
@@ -382,7 +465,7 @@ export default function Settings({ darkMode, setDarkMode }) {
                 Import Data Backup
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
-                Restore or import transactions from a .json file.
+                Restore or import transactions from a .json or .csv file.
               </p>
             </div>
           </div>
@@ -420,6 +503,14 @@ export default function Settings({ darkMode, setDarkMode }) {
           </button>
         </div>
       </div>
+
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        accept=".json,.csv,application/json,text/csv"
+        className="hidden"
+      />
 
       <ConfirmationModal
         isOpen={isDeleteModalOpen}

@@ -524,6 +524,9 @@ export default function ExpenseHistory() {
                       {renderSortIcon("name")}
                     </div>
                   </th>
+                  <th className="py-4 px-5">
+                    Description
+                  </th>
                   <th
                     onClick={() => handleHeaderClick("category")}
                     className="py-4 px-5 cursor-pointer hover:text-[#5B4CFF] dark:hover:text-indigo-400 transition-colors select-none"
@@ -572,6 +575,13 @@ export default function ExpenseHistory() {
                       </td>
                       <td className="py-4 px-5 font-extrabold text-slate-900 dark:text-white">
                         {expense.name}
+                      </td>
+                      <td className="py-4 px-5 text-slate-500 dark:text-slate-400 max-w-[200px] truncate" title={expense.description || ""}>
+                        {expense.description ? (
+                          expense.description
+                        ) : (
+                          <span className="text-slate-300 dark:text-slate-600 font-normal italic">—</span>
+                        )}
                       </td>
                       <td className="py-4 px-5">
                         <span

@@ -841,7 +841,7 @@ export default function Dashboard({ darkMode }) {
                   No recent expenses recorded.
                 </p>
               ) : (
-                filteredExpenses.slice(0, 4).map((exp) => {
+                filteredExpenses.slice(0, 3).map((exp) => {
                   const catLower = (exp.category || "").toLowerCase();
                   let badgeBg = "bg-purple-100/90 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300";
                   let iconBg = "bg-purple-50 dark:bg-purple-950/40 border-purple-100/60 dark:border-purple-800/40";

@@ -4,13 +4,10 @@ import api, { getBudgets, updateBudgets } from "../services/api";
 
 const AppContext = createContext();
 
-const initialToken = localStorage.getItem("token") || "demo-session-token-anshika";
-const initialUserName = localStorage.getItem("userName") || "Anshika";
+const initialToken = localStorage.getItem("token") || null;
+const initialUserName = localStorage.getItem("userName") || "";
 
-const defaultInitialExpenses = [
-  { id: "1", title: "game", name: "game", amount: 223, category: "Entertainment", date: "2026-09-02", payment_method: "UPI" },
-  { id: "2", title: "Team Lunch", name: "Team Lunch", amount: 123, category: "Food", date: "2026-09-02", payment_method: "UPI" },
-];
+const defaultInitialExpenses = [];
 
 const defaultCategoryBudgets = {
   Food: 4000,
@@ -23,15 +20,15 @@ const defaultCategoryBudgets = {
 };
 
 const initialState = {
-  user: { name: initialUserName, email: "anshika@example.com" },
+  user: initialUserName ? { name: initialUserName, email: "" } : null,
   token: initialToken,
   expenses: defaultInitialExpenses,
   categoryBudgets: defaultCategoryBudgets,
-  totalFunds: 6000,
-  totalExpenses: 346,
-  remainingBalance: 5654,
+  totalFunds: 0,
+  totalExpenses: 0,
+  remainingBalance: 0,
   todaySpending: 0,
-  totalTransactions: 2,
+  totalTransactions: 0,
   trends: null,
   isLoading: false,
 };
@@ -163,12 +160,7 @@ export function AppProvider({ children }) {
     const token = localStorage.getItem("token");
     
     if (!token || !token.startsWith("eyJ")) {
-      dispatch({
-        type: "SET_USER",
-        payload: { name: initialUserName, email: "anshika@example.com" },
-        token: token || initialToken,
-      });
-      await fetchAppData();
+      // No valid token — user must authenticate
       return;
     }
 
@@ -181,12 +173,12 @@ export function AppProvider({ children }) {
     } catch {
       localStorage.removeItem("token");
       localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("userName");
       dispatch({
         type: "SET_USER",
-        payload: { name: initialUserName, email: "anshika@example.com" },
-        token: "demo-session-token-anshika",
+        payload: null,
+        token: null,
       });
-      await fetchAppData();
     }
   }, [fetchAppData]);
 

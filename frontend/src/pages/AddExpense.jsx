@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import toast from "react-hot-toast";
 import {
   ArrowLeft,
   Sparkles,
@@ -176,25 +177,34 @@ export default function AddExpense() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate() || loading) return;
 
     setLoading(true);
-    const expensePayload = {
-      ...formData,
-      amount: Number(formData.amount),
-    };
+    try {
+      const expensePayload = {
+        ...formData,
+        amount: Number(formData.amount),
+      };
 
-    if (editExpenseData && editExpenseData.id) {
-      if (updateExpense) {
-        await updateExpense(editExpenseData.id, expensePayload);
+      if (editExpenseData && editExpenseData.id) {
+        if (updateExpense) {
+          await updateExpense(editExpenseData.id, expensePayload);
+        }
+        toast.success("Expense updated successfully!");
+      } else {
+        if (addExpense) {
+          await addExpense(expensePayload);
+        }
+        toast.success("Expense saved successfully!");
       }
-    } else {
-      if (addExpense) {
-        await addExpense(expensePayload);
-      }
+      navigate("/history");
+    } catch (err) {
+      const detail =
+        err?.response?.data?.detail || err?.message || "Failed to save expense.";
+      toast.error(detail);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-    navigate("/dashboard");
   };
 
   const handleReset = () => {

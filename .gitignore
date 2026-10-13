@@ -21,9 +21,21 @@ backend/app/services/__pycache__/
 .env.development.local
 .env.production.local
 backend/.env
+frontend/.env
+frontend/.env.local
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# Python Caches & Pytest
+.pytest_cache/
+backend/.pytest_cache/
+*/__pycache__/
+__pycache__/
 
 # IDE & OS
 .vscode/
 .idea/
 .DS_Store
 *.log
+

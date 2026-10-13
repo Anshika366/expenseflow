@@ -25,7 +25,7 @@ def compute_analytics(expenses: List[ExpenseModel]) -> ReportResponseModel:
     total_amt = sum(x.amount for x in expenses)
     avg_amt = total_amt / len(expenses)
 
-    cat_map = {}
+    cat_map: dict = {}
     for exp in expenses:
         cat_map[exp.category] = cat_map.get(exp.category, 0.0) + exp.amount
 
@@ -34,12 +34,53 @@ def compute_analytics(expenses: List[ExpenseModel]) -> ReportResponseModel:
         pct = (amt / total_amt * 100) if total_amt > 0 else 0.0
         cat_summaries.append(CategorySummaryModel(category=cat, amount=amt, percentage=round(pct, 2)))
 
-    month_map = {}
+    # Monthly aggregation: keyed by YYYY-MM
+    month_map: dict = {}
+    month_count: dict = {}
     for exp in expenses:
         month_key = exp.date[:7] if len(exp.date) >= 7 else exp.date
         month_map[month_key] = month_map.get(month_key, 0.0) + exp.amount
+        month_count[month_key] = month_count.get(month_key, 0) + 1
 
-    month_summaries = [MonthlySummaryModel(month=k, amount=v) for k, v in month_map.items()]
+    month_summaries = []
+    for k in sorted(month_map.keys()):
+        cnt = month_count[k]
+        amt = month_map[k]
+        month_summaries.append(
+            MonthlySummaryModel(
+                month=k,
+                amount=round(amt, 2),
+                transaction_count=cnt,
+                avg_amount=round(amt / cnt, 2) if cnt > 0 else 0.0
+            )
+        )
+
+    # Weekly summary: spending by day-of-week (Mon–Sun order)
+    day_order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    day_names_map = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}
+    week_map: dict = {d: 0.0 for d in day_order}
+    week_count: dict = {d: 0 for d in day_order}
+    for exp in expenses:
+        try:
+            dt = datetime.strptime(exp.date, "%Y-%m-%d")
+            day_name = day_names_map[dt.weekday()]
+            week_map[day_name] += exp.amount
+            week_count[day_name] += 1
+        except (ValueError, KeyError):
+            pass
+
+    weekly_summaries = []
+    for day in day_order:
+        cnt = week_count[day]
+        amt = week_map[day]
+        weekly_summaries.append(
+            MonthlySummaryModel(
+                month=day,
+                amount=round(amt, 2),
+                transaction_count=cnt,
+                avg_amount=round(amt / cnt, 2) if cnt > 0 else 0.0
+            )
+        )
 
     return ReportResponseModel(
         highest_expense=highest,
@@ -47,8 +88,9 @@ def compute_analytics(expenses: List[ExpenseModel]) -> ReportResponseModel:
         average_expense=round(avg_amt, 2),
         category_summary=cat_summaries,
         monthly_summary=month_summaries,
-        weekly_summary=month_summaries
+        weekly_summary=weekly_summaries
     )
+
 
 def compute_dashboard_trends(expenses: List[ExpenseModel], total_funds: float) -> DashboardTrendsModel:
     now = datetime.utcnow()

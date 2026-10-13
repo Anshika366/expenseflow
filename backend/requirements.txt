@@ -8,3 +8,5 @@ httpx
 passlib[bcrypt]
 pyjwt
 python-dotenv
+pytest
+pytest-asyncio

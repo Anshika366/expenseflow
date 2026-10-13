@@ -14,6 +14,32 @@ app = FastAPI(
     description="Modular Full-Stack MongoDB-backed personal expense manager backend."
 )
 
+@app.on_event("startup")
+async def startup_migration():
+    from app.database import expenses_col, users_col, system_col
+    try:
+        unowned_count = await expenses_col.count_documents(
+            {"$or": [{"user_id": None}, {"user_id": {"$exists": False}}, {"user_id": ""}]}
+        )
+        if unowned_count > 0:
+            primary_user = await users_col.find_one({})
+            if primary_user:
+                primary_uid = str(primary_user["_id"])
+                await expenses_col.update_many(
+                    {"$or": [{"user_id": None}, {"user_id": {"$exists": False}}, {"user_id": ""}]},
+                    {"$set": {"user_id": primary_uid}}
+                )
+                legacy_funds = await system_col.find_one({"_id": "total_funds"})
+                if legacy_funds:
+                    await system_col.update_one(
+                        {"_id": f"total_funds_{primary_uid}"},
+                        {"$set": {"amount": legacy_funds.get("amount", 0.0)}},
+                        upsert=True
+                    )
+                    await system_col.delete_one({"_id": "total_funds"})
+    except Exception:
+        pass
+
 from fastapi.responses import JSONResponse
 
 raw_origins = os.getenv(
@@ -25,22 +51,24 @@ origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    origin = request.headers.get("origin", "*")
+    req_origin = request.headers.get("origin", "")
+    # Only echo the origin if it is in the allowed list
+    cors_origin = req_origin if req_origin in origins else ""
+    resp_headers = {}
+    if cors_origin:
+        resp_headers["Access-Control-Allow-Origin"] = cors_origin
+        resp_headers["Access-Control-Allow-Credentials"] = "true"
     return JSONResponse(
         status_code=500,
-        content={"detail": f"Internal Server Error: {str(exc)}"},
-        headers={
-            "Access-Control-Allow-Origin": origin,
-            "Access-Control-Allow-Credentials": "true",
-        }
+        content={"detail": "Internal Server Error"},
+        headers=resp_headers,
     )
 
 @app.middleware("http")

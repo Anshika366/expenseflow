@@ -11,7 +11,21 @@ from app.database import users_col
 
 load_dotenv()
 
-JWT_SECRET = os.getenv("JWT_SECRET", "expenseflow_super_secret_jwt_key_2026")
+_IS_DEV = os.getenv("ENV", "production").lower() in ("development", "dev", "local")
+
+_JWT_SECRET_RAW = os.getenv("JWT_SECRET")
+if not _JWT_SECRET_RAW:
+    if _IS_DEV:
+        # In development fall back to a clearly labelled dev-only secret
+        _JWT_SECRET_RAW = "dev-only-secret-do-not-use-in-production"
+    else:
+        raise RuntimeError(
+            "JWT_SECRET environment variable is not set. "
+            "This is required in production to sign authentication tokens. "
+            "Set it to a long random string in your .env or deployment config."
+        )
+
+JWT_SECRET: str = _JWT_SECRET_RAW
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
 security = HTTPBearer()
