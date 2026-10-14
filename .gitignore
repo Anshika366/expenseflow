@@ -1,10 +1,8 @@
-# Dependencies & Build Outputs
 node_modules/
 frontend/node_modules/
 frontend/dist/
 dist/
 
-# Python Virtual Environments & Caches
 .venv/
 venv/
 backend/.venv/
@@ -15,7 +13,6 @@ backend/app/routes/__pycache__/
 backend/app/services/__pycache__/
 *.pyc
 
-# Environment Files
 .env
 .env.local
 .env.development.local
@@ -27,15 +24,12 @@ frontend/.env.local
 !backend/.env.example
 !frontend/.env.example
 
-# Python Caches & Pytest
 .pytest_cache/
 backend/.pytest_cache/
 */__pycache__/
 __pycache__/
 
-# IDE & OS
 .vscode/
 .idea/
 .DS_Store
 *.log
-
