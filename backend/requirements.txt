@@ -8,5 +8,6 @@ httpx
 passlib[bcrypt]
 pyjwt
 python-dotenv
+anyio
 pytest
-pytest-asyncio
+pytest-asyncio>=0.23
