@@ -16,6 +16,11 @@ jobs:
         image: mongo:7.0
         ports:
           - 27017:27017
+        options: >-
+          --health-cmd mongosh
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Check out repository
@@ -40,7 +45,7 @@ jobs:
           ENV: development
         run: |
           cd backend
-          pytest -v
+          python -m pytest -v
 
   frontend-build:
     name: Frontend Build & Lint
