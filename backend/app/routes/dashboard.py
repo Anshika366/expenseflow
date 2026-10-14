@@ -8,11 +8,9 @@ from app.services.analytics import compute_dashboard_trends
 router = APIRouter(prefix="/api", tags=["dashboard"])
 
 def _user_query(current_user: dict) -> dict:
-    """User-scoped query."""
     return {"user_id": str(current_user["_id"])}
 
 def _funds_key(current_user: dict) -> str:
-    """Per-user funds key in the system collection."""
     return f"total_funds_{str(current_user['_id'])}"
 
 @router.get("/dashboard", response_model=DashboardResponseModel)
@@ -37,7 +35,6 @@ async def get_dashboard_metrics(current_user: dict = Depends(get_current_user)):
         today_sp = sum(e.amount for e in expenses if e.date.startswith(today_str))
 
         sorted_exp = sorted(expenses, key=lambda x: x.date, reverse=True)
-        # FRD requires exactly 3 recent transactions
         recent = sorted_exp[:3]
 
         trends = compute_dashboard_trends(expenses, total_funds)

@@ -31,7 +31,6 @@ async def get_reports(current_user: dict = Depends(get_current_user)):
 
 @router.get("/monthly")
 async def get_monthly_report(current_user: dict = Depends(get_current_user)):
-    """Return month-by-month expense aggregation for the authenticated user."""
     try:
         expenses = await _load_user_expenses(current_user)
         report = compute_analytics(expenses)
@@ -43,7 +42,6 @@ async def get_monthly_report(current_user: dict = Depends(get_current_user)):
 
 @router.get("/category")
 async def get_category_report(current_user: dict = Depends(get_current_user)):
-    """Return category-wise expense aggregation for the authenticated user."""
     try:
         expenses = await _load_user_expenses(current_user)
         report = compute_analytics(expenses)

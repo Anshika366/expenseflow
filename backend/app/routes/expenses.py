@@ -7,20 +7,11 @@ from app.security import get_current_user
 
 router = APIRouter(prefix="/api/expenses", tags=["expenses"])
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 def _build_query(current_user: dict) -> dict:
-    """
-    Build a MongoDB query strictly scoped to the authenticated user.
-    """
     return {"user_id": str(current_user["_id"])}
 
 
-# ---------------------------------------------------------------------------
-# GET /api/expenses — list with optional filters + sorting + pagination
-# ---------------------------------------------------------------------------
 
 MAX_PAGE_SIZE = 200
 DEFAULT_PAGE_SIZE = 50
@@ -40,12 +31,10 @@ async def get_expenses(
     try:
         query = _build_query(current_user)
 
-        # Category filter (case-insensitive)
         if category:
             import re
             query["category"] = {"$regex": f"^{re.escape(category.strip())}$", "$options": "i"}
 
-        # Date filters
         if date:
             query["date"] = date.strip()
         else:
@@ -64,9 +53,8 @@ async def get_expenses(
             try:
                 expenses.append(ExpenseModel(**exp))
             except Exception:
-                pass  # skip malformed legacy records silently
+                pass
 
-        # Sort
         if sort:
             reverse_flag = (order.lower() == "desc")
             if sort == "amount":
@@ -76,13 +64,11 @@ async def get_expenses(
             elif sort == "date":
                 expenses.sort(key=lambda x: x.date, reverse=reverse_flag)
         else:
-            # Default: newest first
             expenses.sort(key=lambda x: x.date, reverse=True)
 
-        # Pagination
         total = len(expenses)
         total_pages = max(1, math.ceil(total / page_size))
-        page = min(page, total_pages)  # clamp to valid range
+        page = min(page, total_pages)
         start = (page - 1) * page_size
         end = start + page_size
         page_items = expenses[start:end]
@@ -100,9 +86,6 @@ async def get_expenses(
         raise HTTPException(status_code=500, detail=f"Could not fetch expenses: {str(e)}")
 
 
-# ---------------------------------------------------------------------------
-# GET /api/expenses/next-id  (must come BEFORE /{expense_id} to avoid clash)
-# ---------------------------------------------------------------------------
 
 @router.get("/next-id")
 async def get_next_id(current_user: dict = Depends(get_current_user)):
@@ -112,9 +95,6 @@ async def get_next_id(current_user: dict = Depends(get_current_user)):
     return {"next_id": next_id_str}
 
 
-# ---------------------------------------------------------------------------
-# GET /api/expenses/{expense_id}
-# ---------------------------------------------------------------------------
 
 @router.get("/{expense_id}", response_model=ExpenseModel)
 async def get_expense_by_id(expense_id: str, current_user: dict = Depends(get_current_user)):
@@ -127,9 +107,6 @@ async def get_expense_by_id(expense_id: str, current_user: dict = Depends(get_cu
     return ExpenseModel(**exp)
 
 
-# ---------------------------------------------------------------------------
-# POST /api/expenses
-# ---------------------------------------------------------------------------
 
 @router.post("", response_model=ExpenseModel, status_code=status.HTTP_201_CREATED)
 async def create_expense(expense: ExpenseModel, current_user: dict = Depends(get_current_user)):
@@ -150,9 +127,6 @@ async def create_expense(expense: ExpenseModel, current_user: dict = Depends(get
         raise HTTPException(status_code=500, detail=f"Could not save expense: {str(e)}")
 
 
-# ---------------------------------------------------------------------------
-# PUT /api/expenses/{expense_id}
-# ---------------------------------------------------------------------------
 
 @router.put("/{expense_id}", response_model=ExpenseModel)
 async def update_expense(
@@ -175,9 +149,6 @@ async def update_expense(
         raise HTTPException(status_code=500, detail=f"Could not update: {str(e)}")
 
 
-# ---------------------------------------------------------------------------
-# DELETE /api/expenses/{expense_id}
-# ---------------------------------------------------------------------------
 
 @router.delete("/{expense_id}")
 async def delete_expense(expense_id: str, current_user: dict = Depends(get_current_user)):

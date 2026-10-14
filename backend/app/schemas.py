@@ -35,7 +35,6 @@ class ExpenseModel(BaseModel):
     date: str
     payment_method: str
     description: Optional[str] = Field(default=None, max_length=200)
-    # user_id is optional so existing records without it remain valid
     user_id: Optional[str] = Field(default=None)
 
     @field_validator("date")

@@ -1,29 +1,15 @@
-"""
-ExpenseFlow — Automated pytest test suite.
-
-Uses an in-memory / isolated MongoDB database via mongomock-motor (preferred)
-or falls back to a local MongoDB test database so production data is never touched.
-
-Run:
-    cd backend
-    pytest tests/ -v
-"""
 import os
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 
-# Point to a separate test database BEFORE importing any app code
 os.environ["MONGO_DETAILS"] = os.getenv("MONGO_TEST_URI", "mongodb://127.0.0.1:27017/expenseflow_test")
-os.environ["ENV"] = "development"  # allows missing JWT_SECRET in dev mode
+os.environ["ENV"] = "development"
 
-from app.main import app  # noqa: E402 — must come after env var set
+from app.main import app
 
 BASE = "http://test"
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest_asyncio.fixture(scope="module")
 async def client():
@@ -33,7 +19,6 @@ async def client():
 
 @pytest_asyncio.fixture(scope="module")
 async def auth_headers(client: AsyncClient):
-    """Register a test user and return auth headers."""
     await client.post("/api/auth/signup", json={
         "name": "Test User",
         "email": "testuser@expenseflow.test",
@@ -50,7 +35,6 @@ async def auth_headers(client: AsyncClient):
 
 @pytest_asyncio.fixture(scope="module")
 async def auth_headers_b(client: AsyncClient):
-    """Second user — for cross-user isolation tests."""
     await client.post("/api/auth/signup", json={
         "name": "Other User",
         "email": "otheruser@expenseflow.test",
@@ -67,7 +51,6 @@ async def auth_headers_b(client: AsyncClient):
 
 @pytest_asyncio.fixture()
 async def created_expense(client: AsyncClient, auth_headers: dict):
-    """Create an expense and return its ID + data."""
     res = await client.get("/api/expenses/next-id", headers=auth_headers)
     next_id = res.json()["next_id"]
     payload = {
@@ -82,13 +65,9 @@ async def created_expense(client: AsyncClient, auth_headers: dict):
     r = await client.post("/api/expenses", json=payload, headers=auth_headers)
     assert r.status_code == 201, r.text
     yield r.json()
-    # Cleanup
     await client.delete(f"/api/expenses/{next_id}", headers=auth_headers)
 
 
-# ---------------------------------------------------------------------------
-# AUTH TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_signup_success(client: AsyncClient):
@@ -97,7 +76,6 @@ async def test_signup_success(client: AsyncClient):
         "email": "signup_only@expenseflow.test",
         "password": "MyPass123!"
     })
-    # Either 201 (new) or 400 (already exists from prior run)
     assert res.status_code in (201, 400)
 
 
@@ -130,9 +108,6 @@ async def test_get_me_authenticated(client: AsyncClient, auth_headers: dict):
     assert data["email"] == "testuser@expenseflow.test"
 
 
-# ---------------------------------------------------------------------------
-# EXPENSE CRUD TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_create_expense_success(client: AsyncClient, auth_headers: dict):
@@ -150,7 +125,6 @@ async def test_create_expense_success(client: AsyncClient, auth_headers: dict):
     assert r.status_code == 201
     data = r.json()
     assert data["name"] == "Coffee"
-    # Cleanup
     await client.delete(f"/api/expenses/{next_id}", headers=auth_headers)
 
 
@@ -263,9 +237,6 @@ async def test_delete_nonexistent_expense(client: AsyncClient, auth_headers: dic
     assert r.status_code == 404
 
 
-# ---------------------------------------------------------------------------
-# CATEGORY & DATE FILTER TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_filter_by_category(client: AsyncClient, auth_headers: dict, created_expense: dict):
@@ -292,9 +263,6 @@ async def test_filter_no_match(client: AsyncClient, auth_headers: dict):
     assert res.json()["total"] == 0
 
 
-# ---------------------------------------------------------------------------
-# SORTING TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_sort_by_amount_asc(client: AsyncClient, auth_headers: dict):
@@ -314,9 +282,6 @@ async def test_sort_by_date_desc(client: AsyncClient, auth_headers: dict):
     assert dates == sorted(dates, reverse=True)
 
 
-# ---------------------------------------------------------------------------
-# PAGINATION TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_pagination_defaults(client: AsyncClient, auth_headers: dict):
@@ -329,7 +294,6 @@ async def test_pagination_defaults(client: AsyncClient, auth_headers: dict):
 
 @pytest.mark.asyncio
 async def test_pagination_invalid_page(client: AsyncClient, auth_headers: dict):
-    # page < 1 should return 422
     res = await client.get("/api/expenses?page=0", headers=auth_headers)
     assert res.status_code == 422
 
@@ -340,9 +304,6 @@ async def test_pagination_page_size_too_large(client: AsyncClient, auth_headers:
     assert res.status_code == 422
 
 
-# ---------------------------------------------------------------------------
-# CROSS-USER ISOLATION TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_cross_user_cannot_see_expenses(
@@ -351,7 +312,6 @@ async def test_cross_user_cannot_see_expenses(
     auth_headers_b: dict,
     created_expense: dict,
 ):
-    """User B should not see user A's expense."""
     exp_id = created_expense["id"]
     res = await client.get(f"/api/expenses/{exp_id}", headers=auth_headers_b)
     assert res.status_code == 404
@@ -384,9 +344,6 @@ async def test_cross_user_cannot_update_expense(
     assert res.status_code == 404
 
 
-# ---------------------------------------------------------------------------
-# DASHBOARD TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_dashboard_returns_metrics(client: AsyncClient, auth_headers: dict):
@@ -403,7 +360,6 @@ async def test_dashboard_returns_metrics(client: AsyncClient, auth_headers: dict
 
 @pytest.mark.asyncio
 async def test_dashboard_recent_expenses_max_3(client: AsyncClient, auth_headers: dict):
-    """FRD requirement: recent_expenses must never exceed 3 items."""
     res = await client.get("/api/dashboard", headers=auth_headers)
     assert res.status_code == 200
     recent = res.json()["recent_expenses"]
@@ -416,9 +372,6 @@ async def test_dashboard_no_token(client: AsyncClient):
     assert res.status_code in (401, 403)
 
 
-# ---------------------------------------------------------------------------
-# REPORTS TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_reports_returns_analytics(client: AsyncClient, auth_headers: dict):
@@ -448,7 +401,6 @@ async def test_reports_category_endpoint(client: AsyncClient, auth_headers: dict
 
 @pytest.mark.asyncio
 async def test_reports_empty_dataset(client: AsyncClient, auth_headers_b: dict):
-    """User B has no expenses — reports should return empty collections."""
     res = await client.get("/api/reports", headers=auth_headers_b)
     assert res.status_code == 200
     data = res.json()
@@ -457,15 +409,10 @@ async def test_reports_empty_dataset(client: AsyncClient, auth_headers_b: dict):
     assert data["average_expense"] == 0.0
 
 
-# ---------------------------------------------------------------------------
-# MONTHLY AGGREGATION CORRECTNESS TEST
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_monthly_aggregation_correctness(client: AsyncClient, auth_headers: dict):
-    """Create 2 expenses in the same month, verify monthly summary is correct."""
     test_month = "2025-04"
-    # Clean up any leftover expenses from prior interrupted test runs
     existing = await client.get("/api/expenses", headers=auth_headers)
     if existing.status_code == 200:
         for item in existing.json().get("items", []):
@@ -499,9 +446,6 @@ async def test_monthly_aggregation_correctness(client: AsyncClient, auth_headers
         await client.delete(f"/api/expenses/{id2}", headers=auth_headers)
 
 
-# ---------------------------------------------------------------------------
-# FUNDS TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_add_funds_success(client: AsyncClient, auth_headers: dict):
@@ -523,9 +467,6 @@ async def test_add_funds_negative_rejected(client: AsyncClient, auth_headers: di
     assert res.status_code == 400
 
 
-# ---------------------------------------------------------------------------
-# SETTINGS TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_export_returns_json(client: AsyncClient, auth_headers: dict):
@@ -564,7 +505,6 @@ async def test_import_valid_data(client: AsyncClient, auth_headers: dict):
     assert res.status_code == 200
     data = res.json()
     assert data["imported"] == 1
-    # Cleanup
     await client.delete(f"/api/expenses/{new_id}", headers=auth_headers)
 
 
@@ -587,13 +527,9 @@ async def test_import_duplicate_detection(client: AsyncClient, auth_headers: dic
     assert res.json()["imported"] == 0
 
 
-# ---------------------------------------------------------------------------
-# BUDGET ISOLATION TESTS
-# ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
 async def test_budgets_unauthenticated_rejected(client: AsyncClient):
-    """Unauthenticated access to budgets must be rejected."""
     res = await client.get("/api/budgets")
     assert res.status_code in (401, 403)
     put_res = await client.put("/api/budgets", json={"Food": 5000})
@@ -606,30 +542,24 @@ async def test_budgets_cross_user_isolation(
     auth_headers: dict,
     auth_headers_b: dict,
 ):
-    """User A's budget updates must never leak to User B or overwrite User B's budgets."""
-    # User A sets custom budget
     user_a_budgets = {"Food": 9999.0, "Shopping": 8888.0}
     res_a = await client.put("/api/budgets", json=user_a_budgets, headers=auth_headers)
     assert res_a.status_code == 200
     assert res_a.json()["Food"] == 9999.0
 
-    # User B checks budgets: should NOT see User A's custom Food amount
     res_b = await client.get("/api/budgets", headers=auth_headers_b)
     assert res_b.status_code == 200
     assert res_b.json().get("Food") != 9999.0
 
-    # User B sets their own custom budget
     user_b_budgets = {"Food": 1234.0, "Shopping": 5678.0}
     res_b_update = await client.put("/api/budgets", json=user_b_budgets, headers=auth_headers_b)
     assert res_b_update.status_code == 200
     assert res_b_update.json()["Food"] == 1234.0
 
-    # User A still sees their own 9999.0
     res_a_verify = await client.get("/api/budgets", headers=auth_headers)
     assert res_a_verify.status_code == 200
     assert res_a_verify.json()["Food"] == 9999.0
 
-    # Cleanup: Reset both
     await client.delete("/api/budgets", headers=auth_headers)
     await client.delete("/api/budgets", headers=auth_headers_b)
 

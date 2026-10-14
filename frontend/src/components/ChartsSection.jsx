@@ -9,7 +9,6 @@ export default function ChartsSection({
 }) {
   const [showAll, setShowAll] = useState(false);
 
-  // Generate last 6 calendar months in chronological order
   const now = new Date();
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const monthsData = [];

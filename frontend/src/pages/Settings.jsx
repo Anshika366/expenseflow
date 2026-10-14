@@ -148,7 +148,6 @@ export default function Settings({ darkMode, setDarkMode }) {
         const text = event.target?.result;
 
         if (isCsv) {
-          // Parse CSV file
           const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
           if (lines.length < 2) {
             throw new Error("CSV file must have a header row and at least one data row.");
@@ -171,7 +170,6 @@ export default function Settings({ darkMode, setDarkMode }) {
           const todayStr = new Date().toISOString().split("T")[0];
 
           for (let i = 1; i < lines.length; i++) {
-            // Regex to handle quoted CSV columns
             const rowValues = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(",");
             const clean = rowValues.map((v) => v.trim().replace(/^"|"$/g, "").replace(/""/g, '"'));
 
@@ -183,7 +181,6 @@ export default function Settings({ darkMode, setDarkMode }) {
             const method = methodIdx !== -1 && clean[methodIdx] ? clean[methodIdx] : "UPI";
             const desc = descIdx !== -1 && clean[descIdx] ? clean[descIdx].slice(0, 200) : "";
 
-            // Validate date format YYYY-MM-DD
             if (!/^\d{4}-\d{2}-\d{2}$/.test(dt)) {
               dt = todayStr;
             }
@@ -207,14 +204,13 @@ export default function Settings({ darkMode, setDarkMode }) {
             throw new Error(`No valid transaction rows found in CSV (${invalidRowCount} invalid rows).`);
           }
 
-          // Import rows via API
           let imported = 0;
           for (const item of validRows) {
             try {
               await api.post("/expenses", item);
               imported++;
-            } catch {
-              // skip duplicates or failed rows
+            } catch (err) {
+              void err;
             }
           }
 
@@ -224,7 +220,6 @@ export default function Settings({ darkMode, setDarkMode }) {
             message: `CSV Import Completed! ${imported} record(s) imported into your ledger${invalidRowCount > 0 ? `, ${invalidRowCount} invalid row(s) skipped` : ""}.`,
           });
         } else {
-          // JSON Import
           let parsedData;
           try {
             parsedData = JSON.parse(text);
@@ -257,8 +252,8 @@ export default function Settings({ darkMode, setDarkMode }) {
                     payment_method: item.payment_method || item.paymentMethod || item.method || "UPI",
                     description: item.description || item.notes || "",
                   });
-                } catch {
-                  // skip
+                } catch (err) {
+                  void err;
                 }
               }
               await fetchAppData();

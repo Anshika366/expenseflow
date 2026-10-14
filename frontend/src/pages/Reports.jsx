@@ -120,7 +120,6 @@ export default function Reports() {
     window.print();
   };
 
-  // Month-over-Month Aggregation (calendar months)
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const now = new Date();
   const past6Months = [];
@@ -222,9 +221,8 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* Visual Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        {/* Category Analytics */}
+        
         <div className="bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-7 rounded-[28px] sm:rounded-[36px] shadow-sm flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
@@ -282,7 +280,6 @@ export default function Reports() {
           </div>
         </div>
 
-        {/* Month-over-Month Expense Chart */}
         <div className="bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-7 rounded-[28px] sm:rounded-[36px] shadow-sm flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
@@ -340,7 +337,6 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* Monthly Summary Table */}
       <div className="bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-[28px] sm:rounded-[36px] p-5 sm:p-8 shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
           <div className="flex items-center gap-3">

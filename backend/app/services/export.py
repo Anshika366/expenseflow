@@ -31,7 +31,6 @@ async def process_import_data(payload: SettingsImportModel, current_user: Option
         else:
             seen_ids.add(exp_id)
             exp_dict = exp.model_dump()
-            # Stamp the owning user; prevent importing records owned by another user
             if user_id:
                 exp_dict["user_id"] = user_id
             to_insert.append(exp_dict)

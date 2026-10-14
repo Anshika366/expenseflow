@@ -59,7 +59,6 @@ app.add_middleware(
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     req_origin = request.headers.get("origin", "")
-    # Only echo the origin if it is in the allowed list
     cors_origin = req_origin if req_origin in origins else ""
     resp_headers = {}
     if cors_origin:

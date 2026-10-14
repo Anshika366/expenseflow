@@ -26,7 +26,6 @@ async def get_budgets(current_user: dict = Depends(get_current_user)):
         if budget_doc and "categories" in budget_doc:
             return budget_doc["categories"]
         
-        # Safe fallback: if user has not set personal budgets, read global_budgets as template without mutating it
         global_doc = await budgets_col.find_one({"_id": "global_budgets"})
         if global_doc and "categories" in global_doc:
             return global_doc["categories"]

@@ -98,7 +98,6 @@ async def delete_all_expenses(current_user: dict = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Delete all failed: {str(e)}")
 
-# Legacy/internal routes kept for backward compat
 @router.post("/system/reset")
 async def clear_database(current_user: dict = Depends(get_current_user)):
     try:

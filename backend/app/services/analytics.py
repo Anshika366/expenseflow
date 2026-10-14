@@ -34,7 +34,6 @@ def compute_analytics(expenses: List[ExpenseModel]) -> ReportResponseModel:
         pct = (amt / total_amt * 100) if total_amt > 0 else 0.0
         cat_summaries.append(CategorySummaryModel(category=cat, amount=amt, percentage=round(pct, 2)))
 
-    # Monthly aggregation: keyed by YYYY-MM
     month_map: dict = {}
     month_count: dict = {}
     for exp in expenses:
@@ -55,7 +54,6 @@ def compute_analytics(expenses: List[ExpenseModel]) -> ReportResponseModel:
             )
         )
 
-    # Weekly summary: spending by day-of-week (Mon–Sun order)
     day_order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     day_names_map = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}
     week_map: dict = {d: 0.0 for d in day_order}

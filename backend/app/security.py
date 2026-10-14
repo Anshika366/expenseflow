@@ -16,7 +16,6 @@ _IS_DEV = os.getenv("ENV", "production").lower() in ("development", "dev", "loca
 _JWT_SECRET_RAW = os.getenv("JWT_SECRET")
 if not _JWT_SECRET_RAW:
     if _IS_DEV:
-        # In development fall back to a clearly labelled dev-only secret
         _JWT_SECRET_RAW = "dev-only-secret-do-not-use-in-production"
     else:
         raise RuntimeError(

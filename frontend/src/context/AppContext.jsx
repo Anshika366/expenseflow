@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer, useEffect, useCallback } from "react";
 import api, { getBudgets, updateBudgets } from "../services/api";
 
@@ -160,7 +159,6 @@ export function AppProvider({ children }) {
     const token = localStorage.getItem("token");
     
     if (!token || !token.startsWith("eyJ")) {
-      // No valid token — user must authenticate
       return;
     }
 
