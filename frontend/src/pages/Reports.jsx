@@ -11,8 +11,6 @@ import {
   Check,
   TrendingDown,
   Sparkles,
-  BarChart3,
-  PieChart,
 } from "lucide-react";
 
 export default function Reports() {
@@ -120,19 +118,6 @@ export default function Reports() {
     window.print();
   };
 
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const now = new Date();
-  const past6Months = [];
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    past6Months.push({
-      key,
-      shortLabel: monthNames[d.getMonth()],
-      fullLabel: `${monthNames[d.getMonth()]} ${d.getFullYear()}`,
-    });
-  }
-
   const allMonthsMap = {};
   expenses.forEach((e) => {
     if (e.date && e.date.length >= 7) {
@@ -145,13 +130,6 @@ export default function Reports() {
     }
   });
 
-  const monthlyChartData = past6Months.map((m) => ({
-    ...m,
-    amount: allMonthsMap[m.key]?.amount || 0,
-    count: allMonthsMap[m.key]?.count || 0,
-  }));
-  const maxMonthlyChartAmount = Math.max(...monthlyChartData.map((m) => m.amount), 0);
-
   const monthlySummaryTableData = Object.keys(allMonthsMap)
     .sort((a, b) => b.localeCompare(a))
     .map((k) => {
@@ -163,19 +141,6 @@ export default function Reports() {
       const avg = count > 0 ? total / count : 0;
       return { key: k, label, total, count, avg };
     });
-
-  const categoryMap = {};
-  filteredExpenses.forEach((e) => {
-    const c = e.category || "Others";
-    categoryMap[c] = (categoryMap[c] || 0) + (Number(e.amount) || 0);
-  });
-  const categoryAnalytics = Object.keys(categoryMap)
-    .map((cat) => ({
-      name: cat,
-      amount: categoryMap[cat],
-      percentage: totalSpentFiltered > 0 ? (categoryMap[cat] / totalSpentFiltered) * 100 : 0,
-    }))
-    .sort((a, b) => b.amount - a.amount);
 
   return (
     <div className="space-y-6 sm:space-y-8 pb-12 text-left font-sans text-slate-800 dark:text-slate-100 max-w-6xl mx-auto">
@@ -221,121 +186,6 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        
-        <div className="bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-7 rounded-[28px] sm:rounded-[36px] shadow-sm flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#5B4CFF] to-[#8B5CF6] text-white flex items-center justify-center shadow-md shrink-0">
-                  <PieChart size={19} />
-                </div>
-                <div>
-                  <h2 className="font-black text-xs sm:text-sm uppercase tracking-wider text-slate-900 dark:text-white">
-                    Category Breakdown
-                  </h2>
-                  <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                    Expense distribution by category
-                  </span>
-                </div>
-              </div>
-              <span className="text-[11px] font-extrabold text-[#5B4CFF] dark:text-indigo-300 bg-indigo-50/80 dark:bg-indigo-950/80 px-3 py-1 rounded-2xl border border-indigo-200/80 dark:border-indigo-800/60">
-                {categoryAnalytics.length} Categories
-              </span>
-            </div>
-
-            {categoryAnalytics.length === 0 ? (
-              <div className="py-12 text-center text-slate-400 font-semibold text-xs">
-                No expense data recorded.
-              </div>
-            ) : (
-              <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
-                {categoryAnalytics.map((cat) => {
-                  const details = getCategoryDetails(cat.name);
-                  return (
-                    <div key={cat.name} className="p-2.5 rounded-2xl bg-slate-50/60 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/60 space-y-1.5">
-                      <div className="flex items-center justify-between text-xs font-black text-slate-900 dark:text-white">
-                        <div className="flex items-center gap-2">
-                          <span>{details.icon}</span>
-                          <span>{cat.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-slate-400 font-semibold text-[11px]">
-                            {Math.round(cat.percentage)}%
-                          </span>
-                          <span>₹{cat.amount.toLocaleString("en-IN")}</span>
-                        </div>
-                      </div>
-                      <div className="w-full h-2 bg-slate-200/60 dark:bg-slate-800 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-[#5B4CFF] to-cyan-400 rounded-full"
-                          style={{ width: `${Math.max(6, Math.min(100, Math.round(cat.percentage)))}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-7 rounded-[28px] sm:rounded-[36px] shadow-sm flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#3B82F6] to-[#06B6D4] text-white flex items-center justify-center shadow-md shrink-0">
-                  <BarChart3 size={19} />
-                </div>
-                <div>
-                  <h2 className="font-black text-xs sm:text-sm uppercase tracking-wider text-slate-900 dark:text-white">
-                    Month-over-Month Expenses
-                  </h2>
-                  <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                    Calendar month spending trend
-                  </span>
-                </div>
-              </div>
-              <span className="text-[11px] font-extrabold text-[#3B82F6] dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/80 px-3 py-1 rounded-2xl border border-blue-200/80 dark:border-blue-800/60">
-                Past 6 Months
-              </span>
-            </div>
-
-            {maxMonthlyChartAmount === 0 ? (
-              <div className="py-12 text-center text-slate-400 font-semibold text-xs">
-                No monthly expense data recorded.
-              </div>
-            ) : (
-              <div className="h-48 flex items-end justify-between gap-2 sm:gap-3 pt-3">
-                {monthlyChartData.map((m) => {
-                  const heightPercent =
-                    maxMonthlyChartAmount > 0
-                      ? Math.max(8, Math.round((m.amount / maxMonthlyChartAmount) * 100))
-                      : 0;
-                  return (
-                    <div key={m.key} className="flex-1 min-w-0 flex flex-col items-center gap-2 group/bar h-full justify-end cursor-default">
-                      <div className="opacity-0 group-hover/bar:opacity-100 transition-all duration-300 transform translate-y-2 group-hover/bar:translate-y-0 shrink-0">
-                        <span className="px-2 py-0.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-black shadow-md whitespace-nowrap block">
-                          ₹{m.amount.toLocaleString("en-IN")}
-                        </span>
-                      </div>
-                      <div className="w-full h-full bg-slate-100/80 dark:bg-slate-900/60 rounded-2xl flex items-end p-1 border border-slate-200/60 dark:border-slate-800/70 group-hover/bar:border-indigo-400/50 transition-all duration-300">
-                        <div
-                          className="w-full bg-gradient-to-t from-[#5B4CFF] via-[#3B82F6] to-cyan-400 rounded-xl transition-all duration-700 ease-out group-hover/bar:brightness-125"
-                          style={{ height: `${heightPercent}%` }}
-                        />
-                      </div>
-                      <span className="text-[10px] sm:text-[11px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider group-hover/bar:text-[#5B4CFF] transition-colors">
-                        {m.shortLabel}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
       <div className="bg-white/95 dark:bg-[#0B0F19]/90 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-[28px] sm:rounded-[36px] p-5 sm:p-8 shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
