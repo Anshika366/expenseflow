@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, status, Depends
@@ -11,11 +12,13 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 async def signup(payload: UserSignupModel):
     try:
         clean_email = payload.email.lower().strip()
-        existing = await users_col.find_one({"email": {"$regex": f"^{re.escape(clean_email)}$", "$options": "i"}})
+        existing = await users_col.find_one({"email": clean_email})
+        if not existing:
+            existing = await users_col.find_one({"email": {"$regex": f"^{re.escape(clean_email)}$", "$options": "i"}})
         if existing:
-            raise HTTPException(status_code=400, detail="Email already registered. Please login.")
+            raise HTTPException(status_code=400, detail="You are already signup pls login")
         
-        hashed_pwd = hash_password(payload.password)
+        hashed_pwd = await asyncio.to_thread(hash_password, payload.password)
         user_doc = {
             "name": payload.name.strip(),
             "email": clean_email,
@@ -37,8 +40,15 @@ async def signup(payload: UserSignupModel):
 async def login(payload: UserLoginModel):
     try:
         clean_email = payload.email.lower().strip()
-        user = await users_col.find_one({"email": {"$regex": f"^{re.escape(clean_email)}$", "$options": "i"}})
-        if not user or not verify_password(payload.password, user.get("password_hash", "")):
+        user = await users_col.find_one({"email": clean_email})
+        if not user:
+            user = await users_col.find_one({"email": {"$regex": f"^{re.escape(clean_email)}$", "$options": "i"}})
+        
+        valid = False
+        if user and user.get("password_hash"):
+            valid = await asyncio.to_thread(verify_password, payload.password, user["password_hash"])
+        
+        if not user or not valid:
             raise HTTPException(status_code=400, detail="Invalid email or password credentials.")
         
         user_id = str(user["_id"])

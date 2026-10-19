@@ -18,6 +18,7 @@ app = FastAPI(
 async def startup_migration():
     from app.database import expenses_col, users_col, system_col
     try:
+        await users_col.create_index("email")
         unowned_count = await expenses_col.count_documents(
             {"$or": [{"user_id": None}, {"user_id": {"$exists": False}}, {"user_id": ""}]}
         )

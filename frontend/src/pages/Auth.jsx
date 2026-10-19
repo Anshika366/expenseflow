@@ -62,14 +62,21 @@ export default function Auth() {
         setView("login");
         setPassword("");
         setConfirmPassword("");
+      } else if (view === "signup") {
+        await api.post("/auth/signup", {
+          name: name.trim(),
+          email: email.trim(),
+          password,
+        });
+        setSuccessMessage("Signup completed now login");
+        setView("login");
+        setPassword("");
+        setConfirmPassword("");
       } else {
-        const endpoint = view === "signup" ? "/auth/signup" : "/auth/login";
-        const payload =
-          view === "signup"
-            ? { name: name.trim(), email: email.trim(), password }
-            : { email: email.trim(), password };
-
-        const response = await api.post(endpoint, payload);
+        const response = await api.post("/auth/login", {
+          email: email.trim(),
+          password,
+        });
         const { access_token, user } = response.data;
 
         localStorage.setItem("token", access_token);
@@ -83,13 +90,22 @@ export default function Auth() {
         });
 
         if (fetchAppData) {
-          await fetchAppData();
+          fetchAppData();
         }
 
         navigate("/dashboard", { replace: true });
       }
     } catch (err) {
-      if (err.response?.data?.detail) {
+      if (
+        view === "signup" &&
+        (err.response?.status === 400 ||
+          (typeof err.response?.data?.detail === "string" &&
+            (err.response.data.detail.toLowerCase().includes("already") ||
+              err.response.data.detail.toLowerCase().includes("exist") ||
+              err.response.data.detail.toLowerCase().includes("registered"))))
+      ) {
+        setValidationError("You are already signup pls login");
+      } else if (err.response?.data?.detail) {
         if (Array.isArray(err.response.data.detail)) {
           setValidationError(err.response.data.detail[0]?.msg || "Validation error occurred.");
         } else {
@@ -150,25 +166,11 @@ export default function Auth() {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-2.5px); }
         }
-        @keyframes badgeFloat1 {
-          0%, 100% { transform: translateY(0px) rotate(-2deg); }
-          50% { transform: translateY(-5px) rotate(1deg); }
-        }
-        @keyframes badgeFloat2 {
-          0%, 100% { transform: translateY(0px) rotate(2deg); }
-          50% { transform: translateY(5px) rotate(-1deg); }
-        }
         .animate-card-entrance {
           animation: cardEntrance 380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .animate-logo-float {
           animation: logoFloat 4s ease-in-out infinite;
-        }
-        .animate-badge-float-1 {
-          animation: badgeFloat1 8s ease-in-out infinite;
-        }
-        .animate-badge-float-2 {
-          animation: badgeFloat2 9s ease-in-out infinite;
         }
       `}</style>
 
@@ -188,16 +190,6 @@ export default function Auth() {
       </div>
 
       <div className="relative w-full max-w-md">
-        <div className="absolute -top-5 -left-4 md:-left-8 z-20 animate-badge-float-1 p-2.5 rounded-2xl bg-white/95 border border-white/90 shadow-[0_16px_35px_-5px_rgba(15,23,42,0.15)] backdrop-blur-md flex items-center gap-2 text-[11px] font-bold transition-all duration-500 opacity-95 pointer-events-none select-none">
-          <span className="w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-xs">💳</span>
-          <span className="text-slate-700">Secure Ledger</span>
-        </div>
-
-        <div className="absolute -bottom-5 -right-4 md:-right-8 z-20 animate-badge-float-2 p-2.5 rounded-2xl bg-white/95 border border-white/90 shadow-[0_16px_35px_-5px_rgba(15,23,42,0.15)] backdrop-blur-md flex items-center gap-2 text-[11px] font-bold transition-all duration-500 opacity-95 pointer-events-none select-none">
-          <span className="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center text-xs">✨</span>
-          <span className="text-slate-700">Expense Analytics</span>
-        </div>
-
         <div className="w-full border p-8 rounded-[28px] z-10 animate-card-entrance transition-all duration-700 cubic-bezier(0.16,1,0.3,1) hover:-translate-y-1 hover:scale-[1.006] bg-white/95 border-white shadow-[0_45px_95px_-10px_rgba(15,23,42,0.24),0_20px_40px_-5px_rgba(15,23,42,0.14)] backdrop-blur-xl">
           <div className="text-center space-y-1.5 mb-6">
             <div className="w-10 h-10 bg-gradient-to-tr from-[#6366F1] to-[#4F46E5] rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow-md shadow-indigo-600/30 animate-logo-float mx-auto mb-3 transition-all duration-300">
