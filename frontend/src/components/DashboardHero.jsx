@@ -32,9 +32,16 @@ export default function DashboardHero({
   return (
     <div className="w-full bg-white dark:bg-[#0B0F19] border border-purple-200/60 dark:border-purple-900/50 hover:border-[#8B5CF6]/80 dark:hover:border-[#A855F7]/80 px-6 md:px-8 py-6 md:py-7 rounded-[28px] shadow-[0_15px_40px_-15px_rgba(139,92,246,0.16)] dark:shadow-[0_20px_50px_-10px_rgba(168,85,247,0.28)] hover:shadow-[0_20px_50px_-10px_rgba(139,92,246,0.28)] dark:hover:shadow-[0_25px_60px_-10px_rgba(168,85,247,0.4)] flex items-center justify-start gap-3 md:gap-4 min-h-[175px] relative z-20 animate-card-entrance transition-all duration-500 text-left group">
 
-      <div className="z-10 py-1 max-w-sm shrink-0">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-[#0F172A] dark:text-white tracking-tight flex items-center gap-2.5 whitespace-nowrap transition-colors duration-500">
-          Welcome back, {userName}! <span className="animate-wave-hand inline-block transform origin-bottom-right">👋</span>
+      <div className="z-10 py-1 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg min-w-0">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#0F172A] dark:text-white tracking-tight flex flex-wrap items-center gap-x-2 gap-y-1 transition-colors duration-500">
+          <span className="whitespace-nowrap">Welcome back,</span>
+          <span className="inline-flex items-center gap-1.5 max-w-full">
+            <span className="truncate max-w-[200px] sm:max-w-[260px] md:max-w-[320px] lg:max-w-[380px] inline-block align-bottom" title={userName}>
+              {userName}
+            </span>
+            <span>!</span>
+            <span className="animate-wave-hand inline-block transform origin-bottom-right shrink-0">👋</span>
+          </span>
         </h2>
         <p className="text-xs md:text-sm text-[#64748B] dark:text-slate-400 font-medium mt-1.5 leading-relaxed transition-colors duration-500">
           Here's your real-time financial overview and insights.
