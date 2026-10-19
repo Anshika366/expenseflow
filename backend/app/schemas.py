@@ -25,6 +25,12 @@ class TokenResponseModel(BaseModel):
     token_type: str = "bearer"
     user: UserResponseModel
 
+class GoogleAuthModel(BaseModel):
+    credential: Optional[str] = None
+    email: Optional[str] = None
+    name: Optional[str] = None
+    picture: Optional[str] = None
+
 _DATE_PATTERN = _re.compile(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$")
 
 class ExpenseModel(BaseModel):

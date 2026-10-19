@@ -563,3 +563,22 @@ async def test_budgets_cross_user_isolation(
     await client.delete("/api/budgets", headers=auth_headers)
     await client.delete("/api/budgets", headers=auth_headers_b)
 
+
+@pytest.mark.asyncio
+async def test_google_auth_success(client: AsyncClient):
+    res = await client.post("/api/auth/google", json={
+        "email": "googletest@expenseflow.test",
+        "name": "Google Tester"
+    })
+    assert res.status_code == 200
+    data = res.json()
+    assert "access_token" in data
+    assert data["user"]["email"] == "googletest@expenseflow.test"
+    assert data["user"]["name"] == "Google Tester"
+
+
+@pytest.mark.asyncio
+async def test_google_auth_invalid(client: AsyncClient):
+    res = await client.post("/api/auth/google", json={})
+    assert res.status_code == 400
+

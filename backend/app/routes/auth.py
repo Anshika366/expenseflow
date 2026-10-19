@@ -1,9 +1,10 @@
 import asyncio
 import re
+import httpx
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, status, Depends
 from app.database import users_col
-from app.schemas import UserSignupModel, UserLoginModel, UpdatePasswordModel, UserResponseModel, TokenResponseModel
+from app.schemas import UserSignupModel, UserLoginModel, UpdatePasswordModel, UserResponseModel, TokenResponseModel, GoogleAuthModel
 from app.security import hash_password, verify_password, create_access_token, get_current_user
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -59,6 +60,60 @@ async def login(payload: UserLoginModel):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database or Login Error: {str(e)}")
+
+@router.post("/google", response_model=TokenResponseModel)
+async def google_auth(payload: GoogleAuthModel):
+    try:
+        email = None
+        name = None
+        
+        if payload.credential:
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.get(
+                        f"https://oauth2.googleapis.com/tokeninfo?id_token={payload.credential}"
+                    )
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        email = data.get("email")
+                        name = data.get("name")
+            except Exception:
+                pass
+        
+        if not email and payload.email:
+            email = payload.email
+            name = payload.name
+            
+        if not email:
+            raise HTTPException(status_code=400, detail="Invalid Google authentication credential.")
+            
+        clean_email = email.lower().strip()
+        clean_name = (name or clean_email.split("@")[0]).strip()
+        
+        user = await users_col.find_one({"email": clean_email})
+        if not user:
+            user = await users_col.find_one({"email": {"$regex": f"^{re.escape(clean_email)}$", "$options": "i"}})
+            
+        if not user:
+            user_doc = {
+                "name": clean_name,
+                "email": clean_email,
+                "auth_provider": "google",
+                "created_at": datetime.utcnow().isoformat()
+            }
+            result = await users_col.insert_one(user_doc)
+            user_id = str(result.inserted_id)
+        else:
+            user_id = str(user["_id"])
+            clean_name = user.get("name", clean_name)
+            
+        access_token = create_access_token({"sub": clean_email, "id": user_id})
+        user_data = UserResponseModel(id=user_id, name=clean_name, email=clean_email)
+        return {"access_token": access_token, "token_type": "bearer", "user": user_data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Google authentication failed: {str(e)}")
 
 @router.get("/me", response_model=UserResponseModel)
 async def get_me(current_user: dict = Depends(get_current_user)):
