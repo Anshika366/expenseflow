@@ -123,8 +123,8 @@ export default function Auth() {
     });
     const originalOpen = window.open;
     window.open = function (url, target, features) {
-      const width = 460;
-      const height = 580;
+      const width = Math.min(640, window.screen.width - 20);
+      const height = Math.min(740, window.screen.height - 40);
       const left = Math.max(0, Math.round((window.screen.width - width) / 2));
       const top = Math.max(0, Math.round((window.screen.height - height) / 2));
       const customFeatures = `width=${width},height=${height},top=${top},left=${left},status=no,toolbar=no,menubar=no`;
