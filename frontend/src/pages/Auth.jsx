@@ -15,65 +15,7 @@ export default function Auth() {
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [showGoogleModal, setShowGoogleModal] = useState(false);
-  const [customEmail, setCustomEmail] = useState("");
-  const [customName, setCustomName] = useState("");
-  const [isAddingAccount, setIsAddingAccount] = useState(false);
-  const [googleAccounts] = useState([
-    {
-      name: "anshika pathak",
-      email: "anshikapathak25@navgurukul.org",
-      letter: "a",
-      bgColor: "bg-[#EA4335]",
-      signedIn: true,
-    },
-    {
-      name: "Anshika Pathak",
-      email: "anshika.akb80@gmail.com",
-      letter: "A",
-      bgColor: "bg-[#8E24AA]",
-      signedIn: false,
-    },
-    {
-      name: "Divya Sonla",
-      email: "divyasonla10@gmail.com",
-      letter: "D",
-      bgColor: "bg-[#0288D1]",
-      nameColor: "text-[#0288D1]",
-      signedIn: false,
-    },
-  ]);
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-  const handleSelectGoogleAccount = useCallback(
-    async (selectedEmail, selectedName) => {
-      try {
-        setGoogleLoading(true);
-        setValidationError("");
-        setShowGoogleModal(false);
-        const response = await api.post("/auth/google", {
-          email: selectedEmail,
-          name: selectedName,
-        });
-        const { access_token, user } = response.data;
-        localStorage.setItem("token", access_token);
-        localStorage.setItem("userName", user.name);
-        localStorage.setItem("isAuthenticated", "true");
-        dispatch({ type: "SET_USER", payload: user, token: access_token });
-        if (fetchAppData) {
-          fetchAppData();
-        }
-        navigate("/dashboard", { replace: true });
-      } catch (err) {
-        setValidationError(
-          err.response?.data?.detail || "Google authentication failed. Please try again."
-        );
-      } finally {
-        setGoogleLoading(false);
-      }
-    },
-    [dispatch, fetchAppData, navigate]
-  );
 
   const handleGoogleAuthResponse = useCallback(
     async (credential) => {
@@ -124,59 +66,62 @@ export default function Auth() {
 
   const handleGoogleAuth = async () => {
     setValidationError("");
-    if (googleClientId && window.google?.accounts?.oauth2) {
-      try {
-        const client = window.google.accounts.oauth2.initTokenClient({
-          client_id: googleClientId,
-          scope: "email profile openid",
-          prompt: "select_account",
-          callback: async (tokenResponse) => {
-            if (tokenResponse.error) {
-              if (tokenResponse.error !== "popup_closed_by_user") {
-                setValidationError("Google authentication was cancelled or failed.");
-              }
-              return;
-            }
-            if (tokenResponse.access_token) {
-              try {
-                setGoogleLoading(true);
-                const userInfoRes = await fetch(
-                  "https://www.googleapis.com/oauth2/v3/userinfo",
-                  {
-                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-                  }
-                );
-                const userInfo = await userInfoRes.json();
-                await handleSelectGoogleAccount(userInfo.email, userInfo.name);
-              } catch (err) {
-                setValidationError(
-                  err.response?.data?.detail || "Google authentication failed. Please try again."
-                );
-              } finally {
-                setGoogleLoading(false);
-              }
-            }
-          },
-        });
-        client.requestAccessToken({ prompt: "select_account" });
-        return;
-      } catch {
-        setShowGoogleModal(true);
-        return;
-      }
-    }
-
-    setShowGoogleModal(true);
-  };
-
-  const handleAddCustomAccount = (e) => {
-    e.preventDefault();
-    if (!customEmail.trim() || !customEmail.includes("@")) {
+    if (!googleClientId) {
+      setValidationError("Google Client ID is not configured. Please add VITE_GOOGLE_CLIENT_ID in your environment variables.");
       return;
     }
-    const cleanEmail = customEmail.trim().toLowerCase();
-    const cleanName = customName.trim() || cleanEmail.split("@")[0];
-    handleSelectGoogleAccount(cleanEmail, cleanName);
+
+    if (!window.google?.accounts?.oauth2) {
+      setValidationError("Google services are loading. Please try again in a moment.");
+      return;
+    }
+
+    const client = window.google.accounts.oauth2.initTokenClient({
+      client_id: googleClientId,
+      scope: "email profile openid",
+      prompt: "select_account",
+      callback: async (tokenResponse) => {
+        if (tokenResponse.error) {
+          if (tokenResponse.error !== "popup_closed_by_user") {
+            setValidationError("Google authentication was cancelled or failed.");
+          }
+          return;
+        }
+        if (tokenResponse.access_token) {
+          try {
+            setGoogleLoading(true);
+            const userInfoRes = await fetch(
+              "https://www.googleapis.com/oauth2/v3/userinfo",
+              {
+                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+              }
+            );
+            const userInfo = await userInfoRes.json();
+            const response = await api.post("/auth/google", {
+              email: userInfo.email,
+              name: userInfo.name,
+              picture: userInfo.picture,
+            });
+            const { access_token, user } = response.data;
+            localStorage.setItem("token", access_token);
+            localStorage.setItem("userName", user.name);
+            localStorage.setItem("isAuthenticated", "true");
+            dispatch({ type: "SET_USER", payload: user, token: access_token });
+            if (fetchAppData) {
+              fetchAppData();
+            }
+            navigate("/dashboard", { replace: true });
+          } catch (err) {
+            setValidationError(
+              err.response?.data?.detail || "Google authentication failed. Please try again."
+            );
+          } finally {
+            setGoogleLoading(false);
+          }
+        }
+      },
+    });
+    client.requestAccessToken({ prompt: "select_account" });
   };
 
   useEffect(() => {
@@ -562,146 +507,6 @@ export default function Auth() {
           </div>
         </div>
       </div>
-
-      {showGoogleModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-7 border border-slate-100 flex flex-col my-auto">
-            <div className="flex justify-center">
-              <svg className="w-9 h-9" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                />
-              </svg>
-            </div>
-
-            <h3 className="text-2xl font-bold text-slate-800 text-center mt-3 tracking-tight">
-              Choose an account
-            </h3>
-            <p className="text-sm text-slate-600 text-center mt-1 font-medium">
-              to continue to <strong className="text-slate-800">ExpenseFlow</strong>
-            </p>
-
-            <div className="mt-5 border border-slate-200/90 rounded-2xl divide-y divide-slate-100 overflow-hidden bg-white shadow-sm">
-              {googleAccounts.map((acc, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handleSelectGoogleAccount(acc.email, acc.name)}
-                  disabled={googleLoading}
-                  className="w-full p-3.5 hover:bg-slate-50 transition-colors flex items-center justify-between gap-3 text-left cursor-pointer"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className={`w-9 h-9 rounded-full ${acc.bgColor} text-white font-bold flex items-center justify-center text-sm shrink-0 shadow-sm`}
-                    >
-                      {acc.letter}
-                    </div>
-                    <div className="min-w-0">
-                      <p className={`text-xs font-bold truncate ${acc.nameColor || "text-slate-800"}`}>
-                        {acc.name}
-                      </p>
-                      <p className="text-[11px] text-slate-500 truncate font-normal">
-                        {acc.email}
-                      </p>
-                    </div>
-                  </div>
-                  {acc.signedIn && (
-                    <span className="text-[10px] font-semibold text-slate-500 bg-slate-100/90 px-2 py-0.5 rounded border border-slate-200 shrink-0">
-                      Signed in
-                    </span>
-                  )}
-                </button>
-              ))}
-
-              {!isAddingAccount ? (
-                <button
-                  type="button"
-                  onClick={() => setIsAddingAccount(true)}
-                  className="w-full p-3.5 hover:bg-slate-50 transition-colors flex items-center gap-3 text-left cursor-pointer"
-                >
-                  <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 border border-slate-200/60">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                  <p className="text-xs font-bold text-slate-700">Use another account</p>
-                </button>
-              ) : (
-                <form onSubmit={handleAddCustomAccount} className="p-3.5 bg-slate-50/70 flex flex-col gap-2">
-                  <input
-                    type="email"
-                    required
-                    value={customEmail}
-                    onChange={(e) => setCustomEmail(e.target.value)}
-                    placeholder="Enter Google email"
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <input
-                    type="text"
-                    value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
-                    placeholder="Name (optional)"
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <div className="flex gap-2 justify-end mt-1">
-                    <button
-                      type="button"
-                      onClick={() => setIsAddingAccount(false)}
-                      className="text-[11px] font-semibold px-3 py-1.5 text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors"
-                    >
-                      Back
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={googleLoading}
-                      className="text-[11px] font-bold px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors shadow-sm"
-                    >
-                      Continue
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
-
-            <p className="text-[11px] text-slate-500 mt-5 leading-relaxed">
-              To continue, Google will share your name, email address, language preference, and profile picture with <strong className="text-slate-700 font-semibold">ExpenseFlow</strong>. Before using this app, you can review its <span className="text-blue-600 font-medium cursor-pointer">privacy policy</span> and <span className="text-blue-600 font-medium cursor-pointer">terms of service</span>.
-            </p>
-
-            <div className="flex items-center justify-between text-[11px] text-slate-500 mt-5 pt-3 border-t border-slate-100">
-              <span className="cursor-pointer hover:text-slate-700">English (United States) ▾</span>
-              <div className="flex items-center gap-3">
-                <span className="cursor-pointer hover:text-slate-700">Help</span>
-                <span className="cursor-pointer hover:text-slate-700">Privacy</span>
-                <span className="cursor-pointer hover:text-slate-700">Terms</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setShowGoogleModal(false);
-                setIsAddingAccount(false);
-              }}
-              className="w-full mt-4 py-2 px-4 rounded-full border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-700 transition-colors cursor-pointer"
-            >
-              Cancel & Return
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
