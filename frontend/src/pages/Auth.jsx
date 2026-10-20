@@ -64,39 +64,18 @@ export default function Auth() {
     }
   }, [googleClientId, handleGoogleAuthResponse]);
 
-  const handleGoogleAuth = async () => {
-    setValidationError("");
-    if (!googleClientId) {
-      setValidationError("Google Sign-In is being configured. Please use email & password to sign in or try again shortly.");
-      return;
-    }
-
-    if (!window.google?.accounts?.oauth2) {
-      setValidationError("Google services are loading. Please try again in a moment.");
-      return;
-    }
-
-    const client = window.google.accounts.oauth2.initTokenClient({
-      client_id: googleClientId,
-      scope: "email profile openid",
-      prompt: "select_account",
-      callback: async (tokenResponse) => {
-        if (tokenResponse.error) {
-          if (tokenResponse.error !== "popup_closed_by_user") {
-            setValidationError("Google authentication was cancelled or failed.");
-          }
-          return;
-        }
-        if (tokenResponse.access_token) {
-          try {
-            setGoogleLoading(true);
-            const userInfoRes = await fetch(
-              "https://www.googleapis.com/oauth2/v3/userinfo",
-              {
-                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-              }
-            );
-            const userInfo = await userInfoRes.json();
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes("access_token=")) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+      if (accessToken) {
+        setGoogleLoading(true);
+        fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+          .then((res) => res.json())
+          .then(async (userInfo) => {
             const response = await api.post("/auth/google", {
               email: userInfo.email,
               name: userInfo.name,
@@ -110,29 +89,40 @@ export default function Auth() {
             if (fetchAppData) {
               fetchAppData();
             }
+            window.history.replaceState(null, "", window.location.pathname);
             navigate("/dashboard", { replace: true });
-          } catch (err) {
+          })
+          .catch((err) => {
             setValidationError(
               err.response?.data?.detail || "Google authentication failed. Please try again."
             );
-          } finally {
+          })
+          .finally(() => {
             setGoogleLoading(false);
-          }
-        }
-      },
-    });
-    const originalOpen = window.open;
-    window.open = function (url, target, features) {
-      const width = Math.min(640, window.screen.width - 20);
-      const height = Math.min(740, window.screen.height - 40);
-      const left = Math.max(0, Math.round((window.screen.width - width) / 2));
-      const top = Math.max(0, Math.round((window.screen.height - height) / 2));
-      const customFeatures = `width=${width},height=${height},top=${top},left=${left},status=no,toolbar=no,menubar=no`;
-      const win = originalOpen.call(this, url, target, customFeatures);
-      window.open = originalOpen;
-      return win;
-    };
-    client.requestAccessToken({ prompt: "select_account" });
+          });
+      }
+    }
+  }, [dispatch, fetchAppData, navigate]);
+
+  const handleGoogleAuth = async () => {
+    setValidationError("");
+    if (!googleClientId) {
+      setValidationError("Google Sign-In is being configured. Please use email & password to sign in or try again shortly.");
+      return;
+    }
+
+    const redirectUri = window.location.origin + "/auth";
+    const googleAuthUrl =
+      "https://accounts.google.com/o/oauth2/v2/auth?" +
+      new URLSearchParams({
+        client_id: googleClientId,
+        redirect_uri: redirectUri,
+        response_type: "token",
+        scope: "email profile openid",
+        prompt: "select_account",
+      }).toString();
+
+    window.location.href = googleAuthUrl;
   };
 
   useEffect(() => {
