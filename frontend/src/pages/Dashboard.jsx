@@ -556,7 +556,7 @@ export default function Dashboard({ darkMode }) {
 
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#5B4CFF] to-[#2F80ED] text-white flex items-center justify-center text-xs font-black shadow-md shadow-indigo-500/20">
-              A
+              {(userName || "U").trim().charAt(0).toUpperCase()}
             </div>
             <span className="text-xs font-bold text-slate-800 dark:text-slate-200 hidden sm:inline-block">
               {userName}
