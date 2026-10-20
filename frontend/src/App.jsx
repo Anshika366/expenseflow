@@ -41,11 +41,7 @@ function AppLayout({ darkMode, setDarkMode }) {
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
-    return (
-      localStorage.getItem("theme") === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches)
-    );
+    return localStorage.getItem("theme") === "dark";
   });
 
   useEffect(() => {
@@ -62,7 +58,10 @@ export default function App() {
     <AppProvider>
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route
+            path="/"
+            element={<LandingPage darkMode={darkMode} setDarkMode={setDarkMode} />}
+          />
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<Auth />} />
 

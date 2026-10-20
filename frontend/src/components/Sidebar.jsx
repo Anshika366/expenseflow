@@ -19,6 +19,14 @@ export default function Sidebar({ darkMode, setDarkMode }) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleLogout = () => {
+    const savedTheme = localStorage.getItem("theme");
+    localStorage.clear();
+    if (savedTheme) {
+      localStorage.setItem("theme", savedTheme);
+    }
+  };
+
   const menuItems = [
     {
       name: "Dashboard",
@@ -166,7 +174,7 @@ export default function Sidebar({ darkMode, setDarkMode }) {
 
           <Link
             to="/"
-            onClick={() => localStorage.clear()}
+            onClick={handleLogout}
             className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-extrabold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all group"
           >
             <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-500 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:-translate-x-0.5">
@@ -259,7 +267,7 @@ export default function Sidebar({ darkMode, setDarkMode }) {
                 to="/"
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  localStorage.clear();
+                  handleLogout();
                 }}
                 className="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-extrabold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30"
               >

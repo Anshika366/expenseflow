@@ -2,9 +2,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroSection from "../components/HeroSection";
 
-export default function LandingPage() {
+export default function LandingPage({ darkMode, setDarkMode }) {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [localDark, setLocalDark] = useState(false);
+  const isDarkMode = typeof darkMode === "boolean" ? darkMode : localDark;
+
+  const toggleTheme = () => {
+    if (setDarkMode) {
+      setDarkMode(!isDarkMode);
+    } else {
+      setLocalDark(!isDarkMode);
+    }
+  };
   const [expenses, setExpenses] = useState([
     {
       id: 1,
@@ -228,7 +237,7 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-6">
             <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={toggleTheme}
               aria-label="Toggle theme"
               className={`w-14 h-7 rounded-full p-0.5 border cursor-pointer hover:scale-105 active:scale-95 transition-colors duration-700 ease-in-out relative ${
                 isDarkMode
