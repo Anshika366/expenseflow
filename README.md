@@ -18,6 +18,7 @@ ExpenseFlow is a modern, production-ready personal expense management system bui
 - **Budget Limits**: Set category-specific budget goals with real-time visual progress and alert badges.
 - **User Authentication & Security**:
   - Secure JWT authentication with user data isolation
+  - Google OAuth 2.0 one-click authentication and account provisioning
   - Startup migration ensuring legacy unassigned data is safely owned
   - Production fail-safe: refuses to start without a valid `JWT_SECRET`
   - CORS strictly configured to permitted origins
@@ -27,7 +28,7 @@ ExpenseFlow is a modern, production-ready personal expense management system bui
   - Full system JSON export and backup snapshot
   - JSON and CSV data import with duplicate detection
   - Confirmed Delete All scoped strictly to the authenticated user
-- **Automated Test Suite**: Comprehensive pytest suite (43 automated tests) covering security, auth, CRUD, pagination, filtering, reports, and funds.
+- **Automated Test Suite**: Comprehensive pytest suite (47 automated tests) covering security, auth, Google OAuth, CRUD, pagination, filtering, reports, and funds.
 - **Docker & CI/CD**: Dockerfiles, Docker Compose, and GitHub Actions CI workflow for automated testing and builds.
 
 ---
@@ -43,7 +44,7 @@ ExpenseFlow is a modern, production-ready personal expense management system bui
 | HTTP Client | Axios | Backend REST API integration with auth interceptors |
 | Backend | FastAPI | High-performance asynchronous Python API |
 | Database | MongoDB + Motor | Asynchronous MongoDB driver with connection proxies |
-| Auth & Security | PyJWT + Passlib (bcrypt) | Token generation, verification, and password hashing |
+| Auth & Security | PyJWT + Passlib (bcrypt) + Google OAuth | Token generation, verification, password hashing, and Google authentication |
 | Validation | Pydantic v2 | Request/response schema and calendar date validation |
 | Testing | pytest + pytest-asyncio | Automated backend integration test suite |
 | Containerization | Docker + Docker Compose | Container deployment for database, API, and client |
@@ -77,7 +78,7 @@ expenseflow/
 │   │   ├── schemas.py             # Pydantic schemas & date validation
 │   │   └── security.py            # Password hashing, JWT verification, user dependencies
 │   ├── tests/
-│   │   └── test_api.py            # 43 automated integration and security tests
+│   │   └── test_api.py            # 47 automated integration and security tests
 │   ├── pytest.ini                 # Pytest configuration
 │   ├── Dockerfile                 # Backend container definition
 │   ├── requirements.txt           # Python backend dependencies
@@ -169,8 +170,9 @@ The frontend will run at `http://localhost:5173` (or `http://localhost:5174`).
 
 ## 🧪 Running Automated Tests
 
-ExpenseFlow includes a comprehensive 43-test suite in `backend/tests/test_api.py` covering:
+ExpenseFlow includes a comprehensive 47-test suite in `backend/tests/test_api.py` covering:
 - Authentication & protected routes (missing token, invalid token, login failures)
+- Google OAuth 2.0 verification and account authentication
 - Cross-user data isolation (User B cannot see, edit, or delete User A's expenses)
 - Expense CRUD operations, auto-ID generation, impossible date validation (`2026-02-31`)
 - API-level filtering (`?category=Food`, `?date=2026-10-01`, `?date_from=...&date_to=...`)
@@ -219,6 +221,7 @@ All endpoints except `/api/auth/signup` and `/api/auth/login` require an `Author
 |--------|----------|-------------|-------------|
 | `POST` | `/api/auth/signup` | Register a new user | `201 Created` |
 | `POST` | `/api/auth/login` | Login and receive JWT access token | `200 OK` |
+| `POST` | `/api/auth/google` | Authenticate with Google OAuth credential | `200 OK` |
 | `GET`  | `/api/auth/me` | Fetch authenticated user profile | `200 OK` |
 | `POST` | `/api/auth/reset-password` | Reset account password | `200 OK` |
 
@@ -270,6 +273,13 @@ Response schema:
 |--------|----------|-------------|
 | `GET`  | `/api/funds/total` | Get authenticated user's total wallet funds |
 | `POST` | `/api/funds?amount=X` | Deposit funds into authenticated user's wallet |
+
+### Budgets (`/api/budgets`)
+
+| Method | Endpoint | Description | Status Code |
+|--------|----------|-------------|-------------|
+| `GET`  | `/api/budgets` | Fetch user's category budget goals | `200 OK` |
+| `PUT`  | `/api/budgets` | Set or update category budget thresholds | `200 OK` |
 
 ### Settings & Backup (`/api/settings`)
 
