@@ -14,7 +14,9 @@ export default function Auth() {
   const [errorMessage, setValidationError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(
+    () => typeof window !== "undefined" && Boolean(window.location.hash?.includes("access_token="))
+  );
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "190234953640-1k8aqp4b2utnkabld9ung7k2ntu7suum.apps.googleusercontent.com";
 
   const handleGoogleAuthResponse = useCallback(
@@ -70,7 +72,6 @@ export default function Auth() {
       const params = new URLSearchParams(hash.substring(1));
       const accessToken = params.get("access_token");
       if (accessToken) {
-        setGoogleLoading(true);
         fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
           headers: { Authorization: `Bearer ${accessToken}` },
         })
