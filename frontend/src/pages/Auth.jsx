@@ -121,6 +121,17 @@ export default function Auth() {
         }
       },
     });
+    const originalOpen = window.open;
+    window.open = function (url, target, features) {
+      const width = 460;
+      const height = 580;
+      const left = Math.max(0, Math.round((window.screen.width - width) / 2));
+      const top = Math.max(0, Math.round((window.screen.height - height) / 2));
+      const customFeatures = `width=${width},height=${height},top=${top},left=${left},status=no,toolbar=no,menubar=no`;
+      const win = originalOpen.call(this, url, target, customFeatures);
+      window.open = originalOpen;
+      return win;
+    };
     client.requestAccessToken({ prompt: "select_account" });
   };
 
@@ -298,16 +309,16 @@ export default function Auth() {
         <div className="absolute bottom-[-10%] left-[-10%] w-80 h-80 rounded-full blur-[120px] bg-purple-100/70 transition-all duration-500 ease-in-out" />
       </div>
 
-      <div className="relative w-full max-w-md">
-        <div className="w-full border p-8 rounded-[28px] z-10 animate-card-entrance transition-all duration-700 cubic-bezier(0.16,1,0.3,1) hover:-translate-y-1 hover:scale-[1.006] bg-white/95 border-white shadow-[0_45px_95px_-10px_rgba(15,23,42,0.24),0_20px_40px_-5px_rgba(15,23,42,0.14)] backdrop-blur-xl">
-          <div className="text-center space-y-1.5 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-tr from-[#6366F1] to-[#4F46E5] rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow-md shadow-indigo-600/30 animate-logo-float mx-auto mb-3 transition-all duration-300">
+      <div className="relative w-full max-w-[385px]">
+        <div className="w-full border p-6 sm:p-7 rounded-[22px] z-10 animate-card-entrance transition-all duration-700 cubic-bezier(0.16,1,0.3,1) hover:-translate-y-1 hover:scale-[1.006] bg-white/95 border-white shadow-[0_30px_70px_-10px_rgba(15,23,42,0.18),0_15px_30px_-5px_rgba(15,23,42,0.1)] backdrop-blur-xl">
+          <div className="text-center space-y-1 mb-5">
+            <div className="w-9 h-9 bg-gradient-to-tr from-[#6366F1] to-[#4F46E5] rounded-xl flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-indigo-600/30 animate-logo-float mx-auto mb-2.5 transition-all duration-300">
               EF
             </div>
-            <h2 className="text-2xl font-extrabold tracking-tight text-slate-800 transition-colors duration-500">
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-800 transition-colors duration-500">
               {getHeading()}
             </h2>
-            <p className="text-slate-500 text-xs font-medium transition-colors duration-500">
+            <p className="text-slate-500 text-[11px] font-medium transition-colors duration-500">
               {getSubheading()}
             </p>
           </div>
