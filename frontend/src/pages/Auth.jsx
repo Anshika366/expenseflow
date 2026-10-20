@@ -67,7 +67,7 @@ export default function Auth() {
   const handleGoogleAuth = async () => {
     setValidationError("");
     if (!googleClientId) {
-      setValidationError("Google Client ID is not configured. Please add VITE_GOOGLE_CLIENT_ID in your environment variables.");
+      setValidationError("Google Sign-In is being configured. Please use email & password to sign in or try again shortly.");
       return;
     }
 
