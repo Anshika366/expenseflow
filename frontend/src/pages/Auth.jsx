@@ -65,71 +65,63 @@ export default function Auth() {
   }, [googleClientId, handleGoogleAuthResponse]);
 
   const handleGoogleAuth = async () => {
-    if (googleClientId && window.google?.accounts?.id) {
-      window.google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          const client = window.google.accounts.oauth2.initTokenClient({
-            client_id: googleClientId,
-            scope: "email profile openid",
-            callback: async (tokenResponse) => {
-              if (tokenResponse.access_token) {
-                try {
-                  setGoogleLoading(true);
-                  const userInfoRes = await fetch(
-                    "https://www.googleapis.com/oauth2/v3/userinfo",
-                    {
-                      headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-                    }
-                  );
-                  const userInfo = await userInfoRes.json();
-                  const response = await api.post("/auth/google", {
-                    email: userInfo.email,
-                    name: userInfo.name,
-                    picture: userInfo.picture,
-                  });
-                  const { access_token, user } = response.data;
-                  localStorage.setItem("token", access_token);
-                  localStorage.setItem("userName", user.name);
-                  localStorage.setItem("isAuthenticated", "true");
-                  dispatch({ type: "SET_USER", payload: user, token: access_token });
-                  if (fetchAppData) fetchAppData();
-                  navigate("/dashboard", { replace: true });
-                } catch {
-                  setValidationError("Google authentication failed. Please try again.");
-                } finally {
-                  setGoogleLoading(false);
-                }
-              }
-            },
-          });
-          client.requestAccessToken();
-        }
-      });
+    setValidationError("");
+    if (!googleClientId) {
+      setValidationError("Google Client ID is not configured. Please add VITE_GOOGLE_CLIENT_ID in your .env file.");
       return;
     }
 
-    const testEmail = window.prompt("Enter Google Email to continue (or configure VITE_GOOGLE_CLIENT_ID):");
-    if (testEmail && testEmail.trim()) {
-      try {
-        setGoogleLoading(true);
-        setValidationError("");
-        const response = await api.post("/auth/google", {
-          email: testEmail.trim(),
-          name: testEmail.trim().split("@")[0],
-        });
-        const { access_token, user } = response.data;
-        localStorage.setItem("token", access_token);
-        localStorage.setItem("userName", user.name);
-        localStorage.setItem("isAuthenticated", "true");
-        dispatch({ type: "SET_USER", payload: user, token: access_token });
-        if (fetchAppData) fetchAppData();
-        navigate("/dashboard", { replace: true });
-      } catch (err) {
-        setValidationError(err.response?.data?.detail || "Google authentication failed.");
-      } finally {
-        setGoogleLoading(false);
-      }
+    if (!window.google?.accounts?.oauth2) {
+      setValidationError("Google services are loading. Please try again in a moment.");
+      return;
     }
+
+    const client = window.google.accounts.oauth2.initTokenClient({
+      client_id: googleClientId,
+      scope: "email profile openid",
+      prompt: "select_account",
+      callback: async (tokenResponse) => {
+        if (tokenResponse.error) {
+          if (tokenResponse.error !== "popup_closed_by_user") {
+            setValidationError("Google authentication was cancelled or failed.");
+          }
+          return;
+        }
+        if (tokenResponse.access_token) {
+          try {
+            setGoogleLoading(true);
+            const userInfoRes = await fetch(
+              "https://www.googleapis.com/oauth2/v3/userinfo",
+              {
+                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+              }
+            );
+            const userInfo = await userInfoRes.json();
+            const response = await api.post("/auth/google", {
+              email: userInfo.email,
+              name: userInfo.name,
+              picture: userInfo.picture,
+            });
+            const { access_token, user } = response.data;
+            localStorage.setItem("token", access_token);
+            localStorage.setItem("userName", user.name);
+            localStorage.setItem("isAuthenticated", "true");
+            dispatch({ type: "SET_USER", payload: user, token: access_token });
+            if (fetchAppData) {
+              fetchAppData();
+            }
+            navigate("/dashboard", { replace: true });
+          } catch (err) {
+            setValidationError(
+              err.response?.data?.detail || "Google authentication failed. Please try again."
+            );
+          } finally {
+            setGoogleLoading(false);
+          }
+        }
+      },
+    });
+    client.requestAccessToken({ prompt: "select_account" });
   };
 
   useEffect(() => {
