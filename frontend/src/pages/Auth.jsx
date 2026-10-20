@@ -15,7 +15,7 @@ export default function Auth() {
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "190234953640-1k8aqp4b2utnkabld9ung7k2ntu7suum.apps.googleusercontent.com";
 
   const handleGoogleAuthResponse = useCallback(
     async (credential) => {
